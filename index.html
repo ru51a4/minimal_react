@@ -1,0 +1,68 @@
+<body>
+
+<div class="main">
+    <counter></counter>
+    <btn></btn>
+</div>
+</body>
+
+<script>
+    var Render
+
+    class component_counter {
+        state = {
+            counter: 0,
+            counter2: 0
+        };
+        body = `<div>counter - {{counter}} counter - {{counter2}}</div>`;
+
+        plus() {
+            this.state.counter++;
+            Render.renderDom();
+        }
+    }
+
+    class component_btn {
+        body = `<button onclick="components.btn.plus()">plus</button>`;
+
+        plus() {
+            components.counter.plus();
+        }
+    }
+
+    var components = {};
+
+    class render {
+        currentDom;
+
+        constructor(props) {
+            components = {
+                'counter': new component_counter(),
+                'btn': new component_btn()
+            };
+            this.currentDom = document.querySelector('.main').innerHTML.trim().split("\n");
+        }
+
+        renderDom() {
+            var renderDom = '';
+            this.currentDom.forEach((tag) => {
+                let currentTag = tag.trim().split("</")[0].replace('<', '').replace('>', '');
+                var currentTagHtml = components[currentTag].body;
+                const interpolations = [...components[currentTag].body.matchAll(RegExp('{{(.*?)}}', 'g'))];
+                interpolations.forEach((item) => {
+                    currentTagHtml = currentTagHtml.replace(item[0], components[currentTag].state[item[1]]);
+                });
+                renderDom += currentTagHtml;
+            });
+            document.querySelector('.main').innerHTML = renderDom;
+        }
+    }
+
+    Render = new render();
+
+    function main() {
+        Render.renderDom();
+    }
+
+    main();
+</script>
