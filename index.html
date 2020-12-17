@@ -2,19 +2,21 @@
 
 <div class="main">
     <counter></counter>
-    <btn></btn>
 </div>
 </body>
 
 <script>
-    var Render
+    var Render;
 
     class component_counter {
         state = {
             counter: 0,
             counter2: 0
         };
-        body = `<div>counter - {{counter}} counter - {{counter2}}</div>`;
+        body = `
+            <div>counter - {{counter}} counter - {{counter2}}</div>
+            <btn></btn>
+        `;
 
         plus() {
             this.state.counter++;
@@ -23,13 +25,25 @@
     }
 
     class component_btn {
-        body = `<button onclick="components.btn.plus()">plus</button>`;
+        body = `
+                <button onclick="components.btn.plus()">plus</button>
+                <text></text>
+                `;
 
         plus() {
             components.counter.plus();
         }
     }
 
+    class component_text {
+        body = `
+                <div>text</div>
+                <text2></text2>
+                `;
+    }
+    class component_text2 {
+        body = `<div>texdt</div>`;
+    }
     var components = {};
 
     class render {
@@ -38,7 +52,9 @@
         constructor(props) {
             components = {
                 'counter': new component_counter(),
-                'btn': new component_btn()
+                'btn': new component_btn(),
+                'text': new component_text(),
+                'text2': new component_text2()
             };
             this.currentDom = document.querySelector('.main').innerHTML.trim().split("\n");
         }
@@ -52,6 +68,38 @@
                 interpolations.forEach((item) => {
                     currentTagHtml = currentTagHtml.replace(item[0], components[currentTag].state[item[1]]);
                 });
+                //deep
+                const tags = currentTagHtml.trim().split("\n")
+
+                function deep(tags) {
+                    tags.forEach((tag) => {
+                        let deepCurrentTag = tag.trim().split("</")[0].replace('<', '').replace('>', '');
+                        if (Object.keys(components).includes(deepCurrentTag)) {
+                            let deepCurrentTagHtml = components[deepCurrentTag].body;
+                            const interpolations = [...components[deepCurrentTag].body.matchAll(RegExp('{{(.*?)}}', 'g'))];
+                            interpolations.forEach((item) => {
+                                deepCurrentTagHtml = deepCurrentTagHtml.replace(item[0], components[deepCurrentTag].state[item[1]]);
+                            });
+                            const deepTags = deepCurrentTagHtml.trim().split("\n")
+                            currentTagHtml = currentTagHtml.replace(tag, deepCurrentTagHtml);
+                            //
+                            var issetDeep = false;
+                            deepTags.forEach((tag)=>{
+                                let deepCurrentTag = tag.trim().split("</")[0].replace('<', '').replace('>', '');
+                                if (Object.keys(components).includes(deepCurrentTag)) {
+                                    issetDeep = true;
+                                }
+                            });
+                            if(issetDeep){
+                                deep(deepTags)
+                             }
+                            //
+                        }
+                    })
+                }
+
+                deep(tags);
+                //
                 renderDom += currentTagHtml;
             });
             document.querySelector('.main').innerHTML = renderDom;
