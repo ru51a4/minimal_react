@@ -1,7 +1,7 @@
 <body>
 
 <div class="main">
-    <counter></counter>
+    <counter />
 </div>
 </body>
 
@@ -13,10 +13,33 @@
             counter: 0,
             counter2: 0
         };
-        body = `
-            <div>counter - {{counter}} counter - {{counter2}}</div>
+
+        body() {
+            return `
+            <div>counter - ${this.state.counter} counter - ${this.state.counter2}
+            <div>
+            <div>
+            ssasdasdasdasdssasdasdasdasdssasdasdasdasdssasddasdasdssasdasdasdasdssasdasdasdasdssas
+            dasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasd
+            asdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdasdasdasdssasdasdasdasdssasda
+            sdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasd
+            asdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasds
+            sasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasd
+            asdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasds
+            sasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasds
+            sasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasd
+            asdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdas
+            dasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssa
+            sdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasd
+            asdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasd
+            asdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdas
+            dasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasd
+            </div>
+            </div>
             <btn></btn>
-        `;
+            </div>
+        `
+        };
 
         plus() {
             this.state.counter++;
@@ -25,10 +48,12 @@
     }
 
     class component_btn {
-        body = `
+        body() {
+            return `
                 <button onclick="components.btn.plus()">plus</button>
                 <text></text>
-                `;
+                `
+        };
 
         plus() {
             components.counter.plus();
@@ -36,74 +61,68 @@
     }
 
     class component_text {
-        body = `
-                <div>text</div>
-                <text2></text2>
-                `;
+        body() {
+           return `<text2></text2>`
+        };
     }
+
     class component_text2 {
-        body = `<div>texdt</div>`;
+        body() {
+            return `<div>texdt</div>`
+        };
     }
+
     var components = {};
 
     class render {
         currentDom;
 
         constructor(props) {
-            components = {
-                'counter': new component_counter(),
-                'btn': new component_btn(),
-                'text': new component_text(),
-                'text2': new component_text2()
-            };
+            components = [
+                    {
+                        name: 'counter',
+                        component: component_counter
+                    },
+                    {
+                        name: 'btn',
+                        component: component_btn
+                    },
+                    {
+                        name: 'text',
+                        component: component_text
+                    },
+                    {
+                        name: 'text2',
+                        component: component_text2
+                    }
+                ];
             this.currentDom = document.querySelector('.main').innerHTML.trim().split("\n");
         }
 
         renderDom() {
-            var renderDom = '';
+            var currentDom = '';
             this.currentDom.forEach((tag) => {
-                let currentTag = tag.trim().split("</")[0].replace('<', '').replace('>', '');
-                var currentTagHtml = components[currentTag].body;
-                const interpolations = [...components[currentTag].body.matchAll(RegExp('{{(.*?)}}', 'g'))];
-                interpolations.forEach((item) => {
-                    currentTagHtml = currentTagHtml.replace(item[0], components[currentTag].state[item[1]]);
-                });
                 //deep
-                const tags = currentTagHtml.trim().split("\n")
-
-                function deep(tags) {
-                    tags.forEach((tag) => {
-                        let deepCurrentTag = tag.trim().split("</")[0].replace('<', '').replace('>', '');
-                        if (Object.keys(components).includes(deepCurrentTag)) {
-                            let deepCurrentTagHtml = components[deepCurrentTag].body;
-                            const interpolations = [...components[deepCurrentTag].body.matchAll(RegExp('{{(.*?)}}', 'g'))];
-                            interpolations.forEach((item) => {
-                                deepCurrentTagHtml = deepCurrentTagHtml.replace(item[0], components[deepCurrentTag].state[item[1]]);
-                            });
-                            const deepTags = deepCurrentTagHtml.trim().split("\n")
-                            currentTagHtml = currentTagHtml.replace(tag, deepCurrentTagHtml);
-                            //
-                            var issetDeep = false;
-                            deepTags.forEach((tag)=>{
-                                let deepCurrentTag = tag.trim().split("</")[0].replace('<', '').replace('>', '');
-                                if (Object.keys(components).includes(deepCurrentTag)) {
-                                    issetDeep = true;
-                                }
-                            });
-                            if(issetDeep){
-                                deep(deepTags)
-                             }
-                            //
-                        }
-                    })
+                function deep(tag) {
+                    if(this.utils.isComponent(tag)) {
+                        deep(tag)
+                    } else {
+                      console.log(tag);
+                      let component = components.find((item) => item.name === tag).component();
+                      currentDom += `${component.body()} \n`;
+                    }
                 }
-
-                deep(tags);
+                deep.bind(this, tag)();
                 //
-                renderDom += currentTagHtml;
             });
-            document.querySelector('.main').innerHTML = renderDom;
+            console.log(currentDom);
         }
+
+        utils = {
+          isComponent(tag){
+              return components.includes(tag);
+          }
+        };
     }
 
     Render = new render();
