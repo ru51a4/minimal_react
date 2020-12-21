@@ -1,14 +1,22 @@
 <body>
 
 <div class="main">
-    <counter />
+    <counter></counter>
 </div>
 </body>
 
 <script>
     var Render;
 
-    class component_counter {
+
+    class component {
+        name = '';
+        constructor(_name) {
+            this.name = name;
+        }
+    }
+
+    class component_counter extends component{
         state = {
             counter: 0,
             counter2: 0
@@ -37,6 +45,8 @@
             </div>
             </div>
             <btn></btn>
+            <button onclick="runEvent(this.name, 'plus')">btn2</button>
+            <text></text>
             </div>
         `
         };
@@ -47,10 +57,11 @@
         }
     }
 
-    class component_btn {
+    class component_btn extends component{
+
         body() {
             return `
-                <button onclick="components.btn.plus()">plus</button>
+                <button onclick="runParrentEvent(this.name, 'plus')">plus</button>
                 <text></text>
                 `
         };
@@ -60,24 +71,33 @@
         }
     }
 
-    class component_text {
+    class component_text extends component{
         body() {
            return `<text2></text2>`
         };
     }
 
-    class component_text2 {
+    class component_text2 extends component{
         body() {
             return `<div>texdt</div>`
         };
     }
 
-    var components = {};
 
+    function runEvent(name, nameEvent) {
+
+    }
+
+    function runParrentEvent(name, nameEvent) {
+
+    }
+
+    var components = {};
+    var currentComponents;
     class render {
         currentDom;
 
-        constructor(props) {
+        constructor() {
             components = [
                     {
                         name: 'counter',
@@ -103,24 +123,31 @@
             var currentDom = '';
             this.currentDom.forEach((tag) => {
                 //deep
+                var hierarchyStack = [];
                 function deep(tag) {
                     if(this.utils.isComponent(tag)) {
-                        deep(tag)
+                        deep(tag);
+                        hierarchyStack.pop();
                     } else {
-                      console.log(tag);
-                      let component = components.find((item) => item.name === tag).component();
+                      const currentName = `${tag}-${currentComponents.length}`;
+                      hierarchyStack.push(currentName);
+                      let component = new components.find((item) => item.name === tag).component();
                       currentDom += `${component.body()} \n`;
+                      currentComponents.push({
+                          name: currentName,
+                          component: component,
+                          hierarchy: hierarchyStack.join('.')
+                      });
                     }
                 }
                 deep.bind(this, tag)();
                 //
             });
-            console.log(currentDom);
         }
 
         utils = {
           isComponent(tag){
-              return components.includes(tag);
+              return components.map(item => item.name).includes(tag);
           }
         };
     }
@@ -132,4 +159,5 @@
     }
 
     main();
+
 </script>
