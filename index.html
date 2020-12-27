@@ -178,6 +178,7 @@
             //todo dom
             if (!this.init) {
                 let virtualDom = domBuilder.build(currentDom);
+                console.log({virtualDom})
                 let virtualDomStack = [];
 
                 function deepDomReplace(el, numChild = 0) {
@@ -185,11 +186,9 @@
 
                     let currentDocumentDom = document.querySelector('.main').children[0];
                     //todo
-                    for (let i = 0; i <= virtualDomStack.length - 2; i++) {
-                        if(currentDocumentDom.children[numChild]) {
-                            currentDocumentDom = currentDocumentDom.children[numChild];
-                        }else{
-
+                    for (let i = 1; i <= virtualDomStack.length - 1; i++) {
+                        if(currentDocumentDom.children[virtualDomStack[i]]) {
+                            currentDocumentDom = currentDocumentDom.children[virtualDomStack[i]];
                         }
                     }
                     if (currentDocumentDom && currentDocumentDom.children.length === 0) {
