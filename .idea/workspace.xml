@@ -2,49 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2efa420f-45ea-4c88-a4da-6dca9107b42a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/dombuilder.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/.babelrc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/.editorconfig" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/.eslintrc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/.travis.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/netlify.toml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/assets/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/assets/icons/android-chrome-192x192.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/assets/icons/android-chrome-512x512.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/assets/icons/apple-touch-icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/assets/icons/favicon-16x16.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/assets/icons/favicon-32x32.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/assets/icons/mstile-150x150.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/components/app.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/components/header/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/components/header/style.less" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/components/home/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/components/home/style.less" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/components/profile/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/components/profile/style.less" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/config.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/favicon.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/index.ejs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/lib/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/manifest.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/pwa.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/style/helpers.less" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/style/index.less" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/style/mixins.less" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/src/style/variables.less" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/test/components/app.test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/test/components/header/index.test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/test/components/home/index.test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/test/components/profile/index.test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/test/setup.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/preact-boilerplate-master/webpack.config.babel.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js.html" beforeDir="false" afterPath="$PROJECT_DIR$/js.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,5 +62,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
