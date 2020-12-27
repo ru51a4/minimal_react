@@ -1,3 +1,6 @@
+<head>
+    <script src="dombuilder.js"></script>
+</head>
 <body>
 
 <div class="main">
@@ -7,19 +10,18 @@
 
 <script>
     var Render;
-
+    var domBuilder = new BuilderDOM();
 
     class component {
 
         name = '';
 
         constructor(_name) {
-            this.name = name;
+            this.name = _name;
         }
-
     }
 
-    class component_counter extends component{
+    class component_counter extends component {
         state = {
             counter: 0,
             counter2: 0
@@ -27,28 +29,14 @@
 
         body() {
             return `
-            <div>counter - ${this.state.counter} counter - ${this.state.counter2}
             <div>
+            <div>counter - ${this.state.counter} counter - ${this.state.counter2}</div>
             <div>
-            ssasdasdasdasdssasdasdasdasdssasdasdasdasdssasddasdasdssasdasdasdasdssasdasdasdasdssas
-            dasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasd
-            asdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdasdasdasdssasdasdasdasdssasda
-            sdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasd
-            asdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasds
-            sasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasd
-            asdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasds
-            sasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasds
-            sasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasd
-            asdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdas
-            dasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssa
-            sdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasd
-            asdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasd
-            asdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasddasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdas
-            dasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasdssasdasdasdasd
+            heh kek
             </div>
-            </div>
+
             <btn></btn>
-            <button onclick="runEvent(this.name, 'plus')">btn2</button>
+            <button onclick="runEvent('${this.name}', 'plus')">btn2</button>
             <text></text>
             </div>
         `
@@ -60,98 +48,186 @@
         }
     }
 
-    class component_btn extends component{
+    class component_btn extends component {
+        state = {
+            kek: 'kek'
+        };
 
         body() {
             return `
-                <button onclick="runParrentEvent(this.name, 'plus')">plus</button>
+                <div>
+                <button onclick="runParrentEvent('${this.name}', 'plus')">plus</button>
                 <text></text>
-                `
+                <div>
+                ${this.state.kek}dd
+                </div>
+                <input type="text" onchange="model('${this.name}', {event: event, key: 'kek'})"></input>
+                </div>`
         };
-
-        plus() {
-            components.counter.plus();
-        }
     }
 
-    class component_text extends component{
+    class component_text extends component {
         body() {
-           return `<text2></text2>`
+            return `<text2></text2>`
         };
     }
 
-    class component_text2 extends component{
+    class component_text2 extends component {
         body() {
             return `<div>texdt</div>`
         };
     }
 
 
-    function runEvent(name, nameEvent) {
-
+    function runEvent(name, nameEvent, arg) {
+        currentComponents.find((item) => {
+            item = item.hierarchy.split('.');
+            return item[item.length - 1] === name;
+        }).component[nameEvent](arg);
     }
 
     function runParrentEvent(name, nameEvent) {
+        let nameParrent = '';
+        currentComponents.forEach((item) => {
+            item = item.hierarchy.split('.');
+            if (item[item.length - 1] === name) {
+                nameParrent = item[item.length - 2];
+            }
+        });
+        runEvent(nameParrent, nameEvent);
+    }
 
+    function model(name, {event, key}) {
+        const value = event.target.value;
+        currentComponents.find((item) => {
+            item = item.hierarchy.split('.');
+            return item[item.length - 1] === name;
+        }).component.state[key] = value;
+        //тут трабла, тк инпут перерендаривается и вэлью теряется
+        Render.renderDom();
     }
 
     var components = {};
-    var currentComponents;
+    var currentComponents = [];
+
     class render {
         currentDom;
+        init = true;
 
         constructor() {
             components = [
-                    {
-                        name: 'counter',
-                        component: component_counter
-                    },
-                    {
-                        name: 'btn',
-                        component: component_btn
-                    },
-                    {
-                        name: 'text',
-                        component: component_text
-                    },
-                    {
-                        name: 'text2',
-                        component: component_text2
-                    }
-                ];
+                {
+                    name: 'counter',
+                    component: component_counter
+                },
+                {
+                    name: 'btn',
+                    component: component_btn
+                },
+                {
+                    name: 'text',
+                    component: component_text
+                },
+                {
+                    name: 'text2',
+                    component: component_text2
+                }
+            ];
             this.currentDom = document.querySelector('.main').innerHTML.trim().split("\n");
         }
 
         renderDom() {
             var currentDom = '';
+            let counter = 0;
+
             this.currentDom.forEach((tag) => {
                 //deep
                 var hierarchyStack = [];
+
                 function deep(tag) {
-                    if(this.utils.isComponent(tag)) {
-                        deep(tag);
-                        hierarchyStack.pop();
+                    const tagName = this.utils.getTag(tag);
+                    if (!this.utils.isComponent(tagName)) {
+                        currentDom += tag + "\n";
                     } else {
-                      const currentName = `${tag}-${currentComponents.length}`;
-                      hierarchyStack.push(currentName);
-                      let component = new components.find((item) => item.name === tag).component();
-                      currentDom += `${component.body()} \n`;
-                      currentComponents.push({
-                          name: currentName,
-                          component: component,
-                          hierarchy: hierarchyStack.join('.')
-                      });
+                        const currentName = `${tagName}-${counter++}`;
+                        let component = currentComponents.find(item => item.name === currentName);
+                        hierarchyStack.push(currentName);
+                        if (!component) {
+                            let currentComponent = components.find((item) => item.name === tagName).component;
+                            component = new currentComponent(currentName);
+                            currentComponents.push({
+                                name: currentName,
+                                component: component,
+                                hierarchy: hierarchyStack.join('.')
+                            });
+                        } else {
+                            component = component.component;
+                        }
+                        let currentComponentDom = component.body();
+                        currentComponentDom.split("\n").forEach((tag) => {
+                            deep.bind(this, tag)();
+                        });
+                        hierarchyStack.pop(currentName);
                     }
                 }
+
                 deep.bind(this, tag)();
                 //
             });
+
+            //todo dom
+            if (!this.init) {
+                let virtualDom = domBuilder.build(currentDom);
+                let virtualDomStack = [];
+
+                function deepDomReplace(el, numChild = 0) {
+                    virtualDomStack.push(numChild);
+
+                    let currentDocumentDom = document.querySelector('.main').children[0];
+                    //todo
+                    for (let i = 0; i <= virtualDomStack.length - 2; i++) {
+                        if(currentDocumentDom.children[numChild]) {
+                            currentDocumentDom = currentDocumentDom.children[numChild];
+                        }else{
+
+                        }
+                    }
+                    if (currentDocumentDom && currentDocumentDom.children.length === 0) {
+
+                        let oldText =  currentDocumentDom.innerText;
+                        let newText = el.innerTEXT;
+                        console.log({old:oldText.trim(), new: newText.trim()});
+
+                        if (oldText.trim() !== newText.trim()) {
+                            currentDocumentDom.innerText = newText;
+                        }
+                    }
+                    /////////////////////////////////////////
+                    //
+                    if (el.childrens.length > 0) {
+                        let currentNumChild = 0;
+                        el.childrens.forEach((id) => {
+                            let child = virtualDom.find(el => el.id === id);
+                            deepDomReplace(child, currentNumChild++);
+                        });
+                    }
+                    virtualDomStack.pop();
+                }
+                deepDomReplace(virtualDom[1]);
+            } else {
+                document.querySelector('.main').innerHTML = currentDom;
+                this.init = false;
+            }
+            ////////////
         }
 
         utils = {
-          isComponent(tag){
-              return components.map(item => item.name).includes(tag);
-          }
+            isComponent(tag) {
+                return components.map(item => item.name).includes(tag);
+            },
+            getTag(str) {
+                return str.split("</")[0].replace("<", "").replace(">", "").trim();
+            }
         };
     }
 
@@ -164,3 +240,4 @@
     main();
 
 </script>
+
