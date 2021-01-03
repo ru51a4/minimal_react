@@ -24,7 +24,8 @@
     class component_counter extends component {
         state = {
             counter: 0,
-            counter2: 0
+            counter2: 0,
+            visible: true
         };
 
         body() {
@@ -37,6 +38,8 @@
 
             <btn></btn>
             <button onclick="runEvent('${this.name}', 'plus')">btn2</button>
+            <div r-if="${this.state.visible}">vif</div>
+            <button onclick="runEvent('${this.name}', 'toggleDiv')">toggle</button>
             <text></text>
             </div>
         `
@@ -44,7 +47,10 @@
 
         plus() {
             this.state.counter++;
-            Render.renderDom();
+        }
+
+        toggleDiv() {
+            this.state.visible = !this.state.visible;
         }
     }
 
@@ -84,6 +90,7 @@
             item = item.hierarchy.split('.');
             return item[item.length - 1] === name;
         }).component[nameEvent](arg);
+        Render.renderDom();
     }
 
     function runParrentEvent(name, nameEvent) {
@@ -113,6 +120,8 @@
     class render {
         currentDom;
         init = true;
+        vdom = [];
+        prevVdom = [];
 
         constructor() {
             components = [
@@ -177,45 +186,81 @@
 
             //todo dom
             if (!this.init) {
-                let virtualDom = domBuilder.build(currentDom);
-                console.log({virtualDom})
-                let virtualDomStack = [];
-
-                function deepDomReplace(el, numChild = 0) {
-                    virtualDomStack.push(numChild);
-
+                function getDomEl(virtualDomStack) {
                     let currentDocumentDom = document.querySelector('.main');
-                    //todo
-                    for (let i = 0; i <= virtualDomStack.length - 1; i++) {
-                        if(currentDocumentDom.children[virtualDomStack[i]]) {
-                            currentDocumentDom = currentDocumentDom.children[virtualDomStack[i]];
+
+                    for (let i = 1; i <= virtualDomStack.length - 1; i++) {
+                        let numChild = this.vdom.find(el => el.id == virtualDomStack[i]).numChild;
+                        if (currentDocumentDom.children[numChild]) {
+                            currentDocumentDom = currentDocumentDom.children[numChild];
                         }
                     }
-                    if (currentDocumentDom && currentDocumentDom.children.length === 0) {
-
-                        let oldText =  currentDocumentDom.innerText;
-                        let newText = el.innerTEXT;
-                        console.log({old:oldText.trim(), new: newText.trim()});
-
-                        if (oldText.trim() !== newText.trim()) {
-                            currentDocumentDom.innerText = newText;
-                        }
-                    }
-                    /////////////////////////////////////////
-                    //
-                    if (el.childrens.length > 0) {
-                        let currentNumChild = 0;
-                        el.childrens.forEach((id) => {
-                            let child = virtualDom.find(el => el.id === id);
-                            deepDomReplace(child, currentNumChild++);
-                        });
-                    }
-                    virtualDomStack.pop();
+                    return currentDocumentDom;
                 }
-                deepDomReplace(virtualDom[1]);
+
+                var stackUpdateDom = [];
+                this.vdom = domBuilder.build(currentDom);
+
+                function deepReplace(index) {
+                    let elVdom = this.vdom[index];
+                    let prevElVdom = this.prevVdom[index];
+                    if (elVdom.innerTEXT !== prevElVdom.innerTEXT) {
+                        stackUpdateDom.push({el: elVdom, event: 'innerTEXT'});
+                    }
+                    if (!elVdom.visible) {
+                        stackUpdateDom.push({el: elVdom, event: 'delete'});
+                    }
+                    if (elVdom.visible && !prevElVdom.visible) {
+                        stackUpdateDom.push({el: elVdom, event: 'create'});
+                    }
+                    elVdom.childrens.forEach((childId) => {
+                        var domElIndex;
+                        this.vdom.forEach((item, elIndex) => {
+                            if (item.id === childId) {
+                                domElIndex = elIndex;
+                            }
+                        });
+                        deepReplace.bind(this, domElIndex)();
+                    })
+                }
+
+                deepReplace.bind(this, 1)();
+                stackUpdateDom.forEach((itemUpdate) => {
+                    let domEl = getDomEl.bind(this, [...itemUpdate.el.parrent, itemUpdate.el.id])();
+                    switch (itemUpdate.event) {
+                        case "delete":
+                            domEl.remove();
+                            break;
+                        case "create":
+                            domEl = getDomEl.bind(this, [...itemUpdate.el.parrent])();
+                            let html = '';
+                        function sumHtml(index, init = false) {
+                            const el = this.vdom.find(el => el.id === index);
+                            if(!init){
+                                html += el.tag + el.innerTEXT;
+                            }
+                            this.vdom.find(el => el.id === index).childrens.forEach((childId) => {
+                                sumHtml.bind(this, childId)();
+                            });
+                            if(!init){
+                                html += el.closedtag;
+                            }
+                        }
+
+                            let parrentId = this.vdom.find(el => el.id === itemUpdate.el.parrent[itemUpdate.el.parrent.length - 1]).id;
+                            sumHtml.bind(this, parrentId, true)();
+                            domEl.innerHTML = html;
+                            break;
+                        case "innerTEXT":
+                            domEl.innerText = itemUpdate.el.innerTEXT;
+                            break;
+                    }
+                });
+                this.prevVdom = this.vdom;
             } else {
                 document.querySelector('.main').innerHTML = currentDom;
                 this.init = false;
+                this.prevVdom = domBuilder.build(currentDom);
             }
             ////////////
         }

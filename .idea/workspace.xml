@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="2efa420f-45ea-4c88-a4da-6dca9107b42a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dombuilder.js" beforeDir="false" afterPath="$PROJECT_DIR$/dombuilder.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -58,6 +59,8 @@
       <workItem from="1608869233857" duration="1293000" />
       <workItem from="1608969630570" duration="919000" />
       <workItem from="1609012095851" duration="13788000" />
+      <workItem from="1609234470895" duration="19000" />
+      <workItem from="1609589907576" duration="9145000" />
     </task>
     <servers />
   </component>
@@ -74,5 +77,6 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

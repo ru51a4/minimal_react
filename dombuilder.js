@@ -23,13 +23,19 @@ class dom_element {
     parrent;
     innerTEXT = '';
     tag;
+    numChild = 0;
+    visible = true;
 }
 
 class dom_element_reverse {
     id;
     childrens = [];
     innerTEXT = '';
+    parrent = [];
+    numChild = 0;
     tag;
+    closedtag;
+    visible = true;
 }
 
 class BuilderDOM {
@@ -42,6 +48,7 @@ class BuilderDOM {
     }
 
     _html_to_dom(str) {
+        var counter = 0;
         var utils = {
             isOpenTag(str) {
                 return str && str.includes("<") && str.includes(">") && !str.includes("</");
@@ -49,11 +56,11 @@ class BuilderDOM {
             isClosedTag(str) {
                 return str && str.includes("</");
             },
+            isRIf(str) {
+                return str.includes("r-if")
+            },
             uuidv4() {
-                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                    return v.toString(16);
-                });
+                return counter++
             },
             str_format_line_break(str) {
                 let res = '';
@@ -73,17 +80,29 @@ class BuilderDOM {
         var res = [];
         str = utils.str_format_line_break(str);
         var dom = str.split("\n").filter(item => item !== ""); //???.map(item => item.trim())
+        var parrentHierarchy = [];
 
-        function deep(index, parrent = false, tag = '') {
+        function deep(index, parrent = false, tag = '', numChild = 0) {
             if (utils.isOpenTag(dom[index])) {
                 let el = new dom_element();
                 res.push(el);
                 el.tag = tag;
                 el.id = utils.uuidv4();
                 if (parrent) {
-                    el.parrent = parrent.id;
+                    parrentHierarchy.push(parrent.id);
+                    el.parrent = JSON.parse(JSON.stringify(parrentHierarchy));
                 }
-
+                el.numChild = numChild;
+                //r-if
+                if (utils.isRIf(dom[index])) {
+                    let visible = (dom[index].split("r-if")[1].match(RegExp('"(.*?)"', 'g'))[0].split("\"").join(""));
+                    if (visible === 'false') {
+                        el.visible = false;
+                    } else {
+                        el.visible = true;
+                    }
+                }
+                //
                 let find = 0;
                 let deepIds = [];
 
@@ -95,7 +114,9 @@ class BuilderDOM {
                         find--;
                     }
                     if (find === 1) {
-                        deepIds.push(i);
+                        if (utils.isOpenTag(dom[i])) {
+                            deepIds.push(i);
+                        }
                     }
                     if (find === 0) {
                         if (!utils.isClosedTag(dom[i])) {
@@ -103,9 +124,10 @@ class BuilderDOM {
                         }
                     }
                     if (find === -1) {
-                        deepIds.forEach((index) => {
-                            deep(index, el, dom[index]);
+                        deepIds.forEach((index, numChild) => {
+                            deep(index, el, dom[index], numChild);
                         });
+                        parrentHierarchy.pop();
                         break;
                     }
                 }
@@ -117,6 +139,25 @@ class BuilderDOM {
     }
 
     _reverseDom(dom) {
+
+
+        //todo
+        var closedTag = (tag) => {
+            if (tag.includes('div')) {
+                return "</div>";
+            }
+            if (tag.includes('button')) {
+                return "</button>";
+            }
+            if (tag.includes('span')) {
+                return "</span>";
+            }
+            if (tag.includes('input')) {
+                return "</span>";
+            }
+        }
+        //
+
         var reverseDom = [];
         for (let index = 0; index <= dom.length - 1; index++) {
             let el = new dom_element_reverse();
@@ -124,9 +165,15 @@ class BuilderDOM {
             el.id = dom[index].id;
             el.innerTEXT = dom[index].innerTEXT;
             el.tag = dom[index].tag;
+            el.parrent = dom[index].parrent;
+            el.visible = dom[index].visible;
+            el.numChild = JSON.parse(JSON.stringify(dom[index].numChild));
+            el.closedtag = closedTag(el.tag);
             for (let j = index; j <= dom.length - 1; j++) {
-                if (dom[j].parrent === el.id) {
-                    el.childrens.push(dom[j].id);
+                if (dom[j].parrent) {
+                    if (dom[j].parrent[dom[j].parrent.length - 1] === el.id) {
+                        el.childrens.push(dom[j].id);
+                    }
                 }
             }
         }
