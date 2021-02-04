@@ -25,6 +25,7 @@ class dom_element {
     tag;
     numChild = 0;
     visible = true;
+    rIf = false;
 }
 
 class dom_element_reverse {
@@ -36,6 +37,7 @@ class dom_element_reverse {
     tag;
     closedtag;
     visible = true;
+    rIf = false;
 }
 
 class BuilderDOM {
@@ -49,6 +51,10 @@ class BuilderDOM {
 
     _html_to_dom(str) {
         var counter = 0;
+        var res = [];
+        str = utils.str_format_line_break(str);
+        var dom = str.split("\n").filter(item => item !== ""); //???.map(item => item.trim())
+        var parrentHierarchy = [];
         var utils = {
             isOpenTag(str) {
                 return str && str.includes("<") && str.includes(">") && !str.includes("</");
@@ -59,7 +65,7 @@ class BuilderDOM {
             isRIf(str) {
                 return str.includes("r-if")
             },
-            uuidv4() {
+            getName() {
                 return counter++
             },
             str_format_line_break(str) {
@@ -76,18 +82,12 @@ class BuilderDOM {
                 return res;
             }
         };
-
-        var res = [];
-        str = utils.str_format_line_break(str);
-        var dom = str.split("\n").filter(item => item !== ""); //???.map(item => item.trim())
-        var parrentHierarchy = [];
-
         function deep(index, parrent = false, tag = '', numChild = 0) {
             if (utils.isOpenTag(dom[index])) {
                 let el = new dom_element();
                 res.push(el);
                 el.tag = tag;
-                el.id = utils.uuidv4();
+                el.id = utils.getName();
                 if (parrent) {
                     parrentHierarchy.push(parrent.id);
                     el.parrent = JSON.parse(JSON.stringify(parrentHierarchy));
@@ -95,6 +95,7 @@ class BuilderDOM {
                 el.numChild = numChild;
                 //r-if
                 if (utils.isRIf(dom[index])) {
+                    el.rIf = true;
                     let visible = (dom[index].split("r-if")[1].match(RegExp('"(.*?)"', 'g'))[0].split("\"").join(""));
                     if (visible === 'false') {
                         el.visible = false;
@@ -152,6 +153,12 @@ class BuilderDOM {
             if (tag.includes('span')) {
                 return "</span>";
             }
+            if (tag.includes('ul')) {
+                return "</ul>";
+            }
+            if (tag.includes('li')) {
+                return "</li>";
+            }
             if (tag.includes('input')) {
                 return "</span>";
             }
@@ -167,6 +174,7 @@ class BuilderDOM {
             el.tag = dom[index].tag;
             el.parrent = dom[index].parrent;
             el.visible = dom[index].visible;
+            el.rIf = dom[index].rIf;
             el.numChild = JSON.parse(JSON.stringify(dom[index].numChild));
             el.closedtag = closedTag(el.tag);
             for (let j = index; j <= dom.length - 1; j++) {

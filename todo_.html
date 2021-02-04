@@ -1,10 +1,60 @@
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
     <script src="dombuilder.js"></script>
 </head>
-<body>
+<style>
 
-<div class="main">
-    <counter></counter>
+
+
+    body{
+        background: url("https://miro.medium.com/max/2400/1*HSisLuifMO6KbLfPOKtLow.jpeg");
+        background-size: cover;
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+    }
+    .btn{
+        font-family: 'Roboto', sans-serif!important;
+        font-size: 14px!important;
+        outline: none!important;
+    }
+    .btn:focus{
+        box-shadow: none!important;
+
+    }
+    .form-control{
+        font-family: 'Roboto', sans-serif!important;
+        font-size: 14px!important;
+    }
+
+    ul {
+        padding: 0px !important;
+    }
+
+    li {
+        padding: 10px;
+        margin: 5px;
+        background: gray;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .complete {
+        background: green;
+    }
+</style>
+<body>
+<div class="container d-flex justify-content-center mt-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="main">
+                <todo></todo>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 
@@ -13,7 +63,6 @@
     var domBuilder = new BuilderDOM();
 
     class component {
-
         name = '';
 
         constructor(_name) {
@@ -21,65 +70,62 @@
         }
     }
 
-    class component_counter extends component {
+    class component_todo extends component {
         state = {
-            counter: 0,
-            counter2: 0,
-            visible: true
+            serf: false,
+            current: '',
+            todos: [
+                {complete: false, title: 'помыть посуду'},
+                {complete: false, title: 'приготовить обед'},
+                {complete: false, title: 'приготовить ужин'}
+            ]
         };
 
         body() {
             return `
-            <div>
-            <button onclick="runEvent('${this.name}', 'toggleDiv')">toggle</button>
-            <div r-if="${this.state.visible}">
-            KEEEEEK
-            <text></text>
-            </div>
+             <div>
+                <div r-if="${this.state.serf}">
+                получишь по жопе
+                </div>
+                <button class="btn btn-primary" onclick="runEvent('${this.name}', 'serf')">
+                    <span r-if="${this.state.serf}">ладно поняль(</span>
+                    <span r-if="${!this.state.serf}">целый день играть в сабей серфер</span>
+                </button>
+                <div class="d-flex jusitfy-content-center flex-column" r-if="${!this.state.serf}">
+                    <div>список дел на сегодня:</div>
+                    <ul>
+                        ${this.state.todos.reduce((acc, item) => acc +
+                `
+                        <li class="${(item.complete) ? 'complete' : ''}">
+                            <span>${item.title}</span>
+                            <button class="btn btn-primary" onclick="runEvent('${this.name}', 'complete', '${item.title}')">
+                            <span r-if="${!item.complete}">готово</span>
+                            <span r-if="${item.complete}">отмена</span>
+                            </button>
+                        </li>
+                        ` + "\n", '')}
+                    </ul>
+                    <input class="form-control" type="text" onchange="model('${this.name}', {event: event, key: 'current'})">
+                    </input>
+                    <button class="mt-2 btn btn-primary" onclick="runEvent('${this.name}', 'add')">добавить</button>
+                </div>
             </div>
         `
         };
 
-        plus() {
-            this.state.counter++;
+        add() {
+            if (this.state.current.length > 0 && !this.state.todos.find(item => item.title === this.state.current)) {
+                this.state.todos.push({title: this.state.current, complete: false});
+            }
         }
-        toggleDiv() {
-            this.state.visible = !this.state.visible;
+
+        serf() {
+            this.state.serf = !this.state.serf;
         }
-    }
 
-    class component_btn extends component {
-        state = {
-            kek: 'kek'
-        };
-
-        body() {
-            return `
-                <div>
-                <button onclick="runParrentEvent('${this.name}', 'plus')">plus</button>
-                <text></text>
-                <div>
-                ${this.state.kek}dd
-                </div>
-                <input type="text" onchange="model('${this.name}', {event: event, key: 'kek'})"></input>
-                </div>`
-        };
-    }
-
-    class component_text extends component {
-        body() {
-            return `<text2></text2>`
-        };
-    }
-
-    class component_text2 extends component {
-        state = {
-            visible: true
-        };
-        body() {
-            return `<div>texdt</div>`
-        };
-
+        complete(title) {
+            this.state.todos.find(item => item.title === title).complete = !this.state.todos.find(item => item.title === title).complete;
+        }
     }
 
 
@@ -124,21 +170,9 @@
         constructor() {
             components = [
                 {
-                    name: 'counter',
-                    component: component_counter
+                    name: 'todo',
+                    component: component_todo
                 },
-                {
-                    name: 'btn',
-                    component: component_btn
-                },
-                {
-                    name: 'text',
-                    component: component_text
-                },
-                {
-                    name: 'text2',
-                    component: component_text2
-                }
             ];
             this.currentDom = document.querySelector('.main').innerHTML.trim().split("\n");
         }
@@ -202,7 +236,8 @@
                 function deepReplace(index) {
                     let elVdom = this.vdom[index];
                     let prevElVdom = this.prevVdom[index];
-                    if (elVdom.innerTEXT !== prevElVdom.innerTEXT) {
+                    if (!elVdom.rIf && !stackUpdateDom.map(item => item.el.id).includes(elVdom.id) && !this.hiddenEls.includes(elVdom.id) && prevElVdom && elVdom && (elVdom.innerTEXT.trim() !== prevElVdom.innerTEXT.trim() || elVdom.tag !== prevElVdom.tag)) {
+                        console.log({innerTEXT: elVdom.innerTEXT});
                         stackUpdateDom.push({el: elVdom, event: 'innerTEXT'});
                     }
                     if (!elVdom.visible && !this.hiddenEls.includes(elVdom.id)) {
@@ -241,36 +276,49 @@
                     }
                     for (let i = iStart; i <= childs.length - 1; i++) {
                         this.vdom[childs[i]].numChild -= 1;
-                        //todo recur..
                     }
                 });
-
-
+                console.log({stackUpdateDom})
                 stackUpdateDom.forEach((itemUpdate) => {
                     let domEl = getDomEl.bind(this, [...itemUpdate.el.parrent, itemUpdate.el.id])();
-                    console.log({domEl})
+                    let html = '';
+
+                    function sumHtml(index, init = false, create = false) {
+                        const el = this.vdom.find(el => el.id === index);
+                        if(el.tag.includes(`r-if="false"`)){
+                            return;
+                        }
+                        if (!init || create) {
+                            html += el.tag + el.innerTEXT;
+                        }
+                        this.vdom.find(el => el.id === index).childrens.forEach((childId) => {
+                            sumHtml.bind(this, childId)();
+                        });
+                        if (!init || create) {
+                            html += el.closedtag;
+                        }
+                    }
+
                     switch (itemUpdate.event) {
                         case "delete":
                             domEl.remove();
                             break;
                         case "create":
                             domEl = getDomEl.bind(this, [...itemUpdate.el.parrent])();
-                            let html = '';
-
-                        function sumHtml(index, init = false) {
-                            const el = this.vdom.find(el => el.id === index);
-                            html += el.tag + el.innerTEXT;
-                            this.vdom.find(el => el.id === index).childrens.forEach((childId) => {
-                                sumHtml.bind(this, childId)();
-                            });
-                            html += el.closedtag;
-                        }
-
-                            sumHtml.bind(this, itemUpdate.el.id, true)();
-                            domEl.children[itemUpdate.el.numChild - 1].insertAdjacentHTML('afterend', html);
+                            sumHtml.bind(this, itemUpdate.el.id, true, true)();
+                            if (domEl.children[itemUpdate.el.numChild - 1]) {
+                                domEl.children[itemUpdate.el.numChild - 1].insertAdjacentHTML('afterend', html);
+                            } else if (domEl.children.length === 0) {
+                                domEl.innerHTML = html;
+                            } else {
+                                domEl.children[itemUpdate.el.numChild].insertAdjacentHTML('beforebegin', html);
+                            }
                             break;
                         case "innerTEXT":
-                            domEl.innerText = itemUpdate.el.innerTEXT;
+                            domEl = getDomEl.bind(this, [...itemUpdate.el.parrent])();
+                            sumHtml.bind(this, itemUpdate.el.parrent[itemUpdate.el.parrent.length - 1], true)();
+                            domEl.innerHTML = html;
+                            //console.log({html});
                             break;
                     }
                 });
@@ -297,6 +345,9 @@
 
     function main() {
         Render.renderDom();
+        //initfix
+        Render.renderDom();
+
     }
 
     main();

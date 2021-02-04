@@ -1,0 +1,39 @@
+<head>
+</head>
+<body>
+
+<div class="main">
+</div>
+</body>
+
+<script>
+    let a = "5*5*5";
+    var sum = 0;
+    function calc(q, start = 0) {
+        let a = "";
+        let b = '';
+        for (let i = start; i <= q.length - 1; i++) {
+            a += String(q[i]);
+            console.log(q[i])
+            if(q[i] === '*'){
+                console.log('dd');
+
+
+                for(let j = i + 1; j <= q.length - 1; j++){
+                    if(q[j] === '+' || q[j] === '-' || q[j] === '*' || q[j] === '/'){
+                        return
+                    }else{
+                        b += String(q[j]);
+                    }
+                }
+            }
+            console.log(b);
+            sum += Number(a) * Number(b);
+            calc(q, i)
+        }
+    }
+    calc(a);
+    console.log(sum);
+
+</script>
+

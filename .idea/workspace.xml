@@ -31,6 +31,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -61,6 +62,10 @@
       <workItem from="1609012095851" duration="13788000" />
       <workItem from="1609234470895" duration="19000" />
       <workItem from="1609589907576" duration="9145000" />
+      <workItem from="1609832300011" duration="645000" />
+      <workItem from="1609940670636" duration="4018000" />
+      <workItem from="1610202518822" duration="2149000" />
+      <workItem from="1610270725165" duration="16907000" />
     </task>
     <servers />
   </component>
