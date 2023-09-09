@@ -50,11 +50,6 @@ class BuilderDOM {
     }
 
     _html_to_dom(str) {
-        var counter = 0;
-        var res = [];
-        str = utils.str_format_line_break(str);
-        var dom = str.split("\n").filter(item => item !== ""); //???.map(item => item.trim())
-        var parrentHierarchy = [];
         var utils = {
             isOpenTag(str) {
                 return str && str.includes("<") && str.includes(">") && !str.includes("</");
@@ -82,6 +77,12 @@ class BuilderDOM {
                 return res;
             }
         };
+
+        var counter = 0;
+        var res = [];
+        str = utils.str_format_line_break(str);
+        var dom = str.split("\n").filter(item => item !== ""); //???.map(item => item.trim())
+        var parrentHierarchy = [];
         function deep(index, parrent = false, tag = '', numChild = 0) {
             if (utils.isOpenTag(dom[index])) {
                 let el = new dom_element();
@@ -96,12 +97,8 @@ class BuilderDOM {
                 //r-if
                 if (utils.isRIf(dom[index])) {
                     el.rIf = true;
-                    let visible = (dom[index].split("r-if")[1].match(RegExp('"(.*?)"', 'g'))[0].split("\"").join(""));
-                    if (visible === 'false') {
-                        el.visible = false;
-                    } else {
-                        el.visible = true;
-                    }
+                    let visible = (dom[index].includes(`r-if="false"`));
+                    el.visible = visible;
                 }
                 //
                 let find = 0;
@@ -125,8 +122,12 @@ class BuilderDOM {
                         }
                     }
                     if (find === -1) {
+                        let counter = 0;
                         deepIds.forEach((index, numChild) => {
-                            deep(index, el, dom[index], numChild);
+                            deep(index, el, dom[index], counter);
+                            if (!dom[index].includes(`r-if="false"`)) {
+                                counter++;
+                            };
                         });
                         parrentHierarchy.pop();
                         break;
@@ -170,7 +171,7 @@ class BuilderDOM {
             let el = new dom_element_reverse();
             reverseDom.push(el);
             el.id = dom[index].id;
-            el.innerTEXT = dom[index].innerTEXT;
+            el.innerTEXT = dom[index].innerTEXT.trim();
             el.tag = dom[index].tag;
             el.parrent = dom[index].parrent;
             el.visible = dom[index].visible;

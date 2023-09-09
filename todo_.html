@@ -1,32 +1,34 @@
+<html>
+
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 
     <script src="dombuilder.js"></script>
 </head>
 <style>
-
-
-
-    body{
-        background: url("https://miro.medium.com/max/2400/1*HSisLuifMO6KbLfPOKtLow.jpeg");
+    body {
+        background: url("https://sun9-48.userapi.com/impg/6jD1oXeueLCIIUKphDraApzWOckzvQNw4J7FeQ/deK8qykHaNY.jpg?size=810x1080&quality=96&sign=293d0eb70cb37200f35d55b510a8c38b&c_uniq_tag=CDHD3qxNC2cK1Xg8qzVYlvQUwQ5_R8riTGFQjhoyO3s&type=album");
         background-size: cover;
         font-family: 'Roboto', sans-serif;
         font-size: 14px;
     }
-    .btn{
-        font-family: 'Roboto', sans-serif!important;
-        font-size: 14px!important;
-        outline: none!important;
+
+    .btn {
+        font-family: 'Roboto', sans-serif !important;
+        font-size: 14px !important;
+        outline: none !important;
     }
-    .btn:focus{
-        box-shadow: none!important;
+
+    .btn:focus {
+        box-shadow: none !important;
 
     }
-    .form-control{
-        font-family: 'Roboto', sans-serif!important;
-        font-size: 14px!important;
+
+    .form-control {
+        font-family: 'Roboto', sans-serif !important;
+        font-size: 14px !important;
     }
 
     ul {
@@ -46,16 +48,17 @@
         background: green;
     }
 </style>
+
 <body>
-<div class="container d-flex justify-content-center mt-4">
-    <div class="card">
-        <div class="card-body">
-            <div class="main">
-                <todo></todo>
+    <div class="container d-flex justify-content-center mt-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="main">
+                    <todo></todo>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </body>
 
 <script>
@@ -75,16 +78,19 @@
             serf: false,
             current: '',
             todos: [
-                {complete: false, title: 'помыть посуду'},
-                {complete: false, title: 'приготовить обед'},
-                {complete: false, title: 'приготовить ужин'}
+                { complete: false, title: 'помыть посуду' },
+                { complete: false, title: 'приготовить обед' },
+                { complete: false, title: 'приготовить ужин' }
             ]
         };
 
         body() {
             return `
-             <div>
-                <div r-if="${this.state.serf}">
+
+             <div class="asda">
+             <div class="asd">
+
+                 <div r-if="${this.state.serf}">
                 получишь по жопе
                 </div>
                 <button class="btn btn-primary" onclick="runEvent('${this.name}', 'serf')">
@@ -109,13 +115,16 @@
                     </input>
                     <button class="mt-2 btn btn-primary" onclick="runEvent('${this.name}', 'add')">добавить</button>
                 </div>
+
+            </div>
+
             </div>
         `
         };
 
         add() {
             if (this.state.current.length > 0 && !this.state.todos.find(item => item.title === this.state.current)) {
-                this.state.todos.push({title: this.state.current, complete: false});
+                this.state.todos.push({ title: this.state.current, complete: false });
             }
         }
 
@@ -148,7 +157,7 @@
         runEvent(nameParrent, nameEvent);
     }
 
-    function model(name, {event, key}) {
+    function model(name, { event, key }) {
         const value = event.target.value;
         currentComponents.find((item) => {
             item = item.hierarchy.split('.');
@@ -215,116 +224,140 @@
                 deep.bind(this, tag)();
                 //
             });
-
+            let html = '';
+            let htmllvl = 0;
+            function sumHtml(index, init = false, create = false, sss = false) {
+                if (sss) {
+                    htmllvl = 0;
+                } else {
+                    htmllvl++;
+                }
+                const el = this.vdom.find(el => el.id === index);
+                if (el.tag.includes(`r-if="false"`)) {
+                    return;
+                }
+                if (htmllvl !== 0) {
+                    html += el.tag + el.innerTEXT;
+                }
+                el.childrens.forEach((childId) => {
+                    sumHtml.bind(this, childId, true, true)();
+                });
+                if (htmllvl !== 0) {
+                    html += el.closedtag;
+                }
+            }
             //todo dom
             if (!this.init) {
-                function getDomEl(virtualDomStack) {
+                function getDomEl(virtualDomStack, ff) {
                     let currentDocumentDom = document.querySelector('.main');
 
                     for (let i = 1; i <= virtualDomStack.length - 1; i++) {
                         let numChild = this.vdom.find(el => el.id == virtualDomStack[i]).numChild;
+                        console.log({ numChild })
                         if (currentDocumentDom.children[numChild]) {
+
                             currentDocumentDom = currentDocumentDom.children[numChild];
                         }
                     }
+
                     return currentDocumentDom;
                 }
-
                 var stackUpdateDom = [];
                 this.vdom = domBuilder.build(currentDom);
+                let kek = false;
+
 
                 function deepReplace(index) {
                     let elVdom = this.vdom[index];
                     let prevElVdom = this.prevVdom[index];
-                    if (!elVdom.rIf && !stackUpdateDom.map(item => item.el.id).includes(elVdom.id) && !this.hiddenEls.includes(elVdom.id) && prevElVdom && elVdom && (elVdom.innerTEXT.trim() !== prevElVdom.innerTEXT.trim() || elVdom.tag !== prevElVdom.tag)) {
-                        console.log({innerTEXT: elVdom.innerTEXT});
-                        stackUpdateDom.push({el: elVdom, event: 'innerTEXT'});
+
+                    if (!elVdom) {
+                        stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "delete" })
+                        return;
                     }
-                    if (!elVdom.visible && !this.hiddenEls.includes(elVdom.id)) {
-                        stackUpdateDom.push({el: elVdom, event: 'delete'});
-                        this.hiddenEls.push(elVdom.id);
+
+                    let q1 = { ...elVdom, childrens: "" };
+                    let q2 = { ...prevElVdom, childrens: "" };
+                    if (JSON.stringify(q1) !== JSON.stringify(q2)) {
+                        let qq = this.prevVdom.find((el) => el.id == q1.parrent[q1.parrent.length - 1])
+                        let qq2 = this.prevVdom.find((el) => el.id == q2.parrent[q2.parrent.length - 1])
+
+                        stackUpdateDom.push({ prev: qq2, el: qq, type: "create" })
+                        return;
                     }
-                    if (elVdom.visible && this.hiddenEls.includes(elVdom.id)) {
-                        stackUpdateDom.push({el: elVdom, event: 'create'});
-                        this.hiddenEls = this.hiddenEls.filter((item) => item !== elVdom.id);
-                    }
-                    elVdom.childrens.forEach((childId) => {
-                        var domElIndex;
-                        this.vdom.forEach((item, elIndex) => {
-                            if (item.id === childId) {
-                                domElIndex = elIndex;
+
+
+
+                    let c1 = elVdom.childrens.length;
+                    let c2 = prevElVdom.childrens.length;
+                    let c3 = (c1 > c2) ? c1 : c2;
+                    for (let i = 0; i <= c3 - 1; i++) {
+                        let cc1 = this.vdom.find((el) => el.id == elVdom.childrens[i]);
+                        let cc2 = this.prevVdom.find((el) => el.id == prevElVdom.childrens[i]);
+                        if (JSON.stringify(cc1) != JSON.stringify(cc2)) {
+                            let q1 = { ...cc1, childrens: "" };
+                            let q2 = { ...cc2, childrens: "" };
+                            console.log({ q1, q2 })
+                            if (JSON.stringify(q1) !== JSON.stringify(q2)) {
+                                stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "create" })
+                                return;
+                            } {
+                                var domElIndex;
+                                this.prevVdom.forEach((item, elIndex) => {
+                                    if (cc1.id === item.id) {
+                                        domElIndex = elIndex;
+                                    }
+                                });
+
+                                deepReplace.bind(this, domElIndex)();
                             }
-                        });
-                        deepReplace.bind(this, domElIndex)();
-                    })
+                            return;
+                        } else {
+                            var domElIndex;
+                            this.prevVdom.forEach((item, elIndex) => {
+                                if (cc1.id === item.id) {
+                                    domElIndex = elIndex;
+                                }
+                            });
+
+                            deepReplace.bind(this, domElIndex)();
+
+                        }
+                    }
+                    if (elVdom.innerTEXT.trim() !== prevElVdom.innerTEXT.trim()) {
+                        stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "text" })
+                        return;
+                    }
+
                 }
 
                 deepReplace.bind(this, 1)();
 
-
-                //todo
-                //fix numchild
-                this.hiddenEls.forEach((elVdomId) => {
-                    const elVdom = this.vdom[elVdomId];
-                    const childs = this.vdom[elVdom.parrent[elVdom.parrent.length - 1]].childrens
-                    let iStart = 0;
-                    for (let i = 0; i <= childs.length - 1; i++) {
-                        if (childs[i] === elVdom.id) {
-                            iStart = i + 1;
-                            break;
-                        }
-                    }
-                    for (let i = iStart; i <= childs.length - 1; i++) {
-                        this.vdom[childs[i]].numChild -= 1;
-                    }
-                });
-                console.log({stackUpdateDom})
+                console.log({ stackUpdateDom })
                 stackUpdateDom.forEach((itemUpdate) => {
-                    let domEl = getDomEl.bind(this, [...itemUpdate.el.parrent, itemUpdate.el.id])();
-                    let html = '';
+                    let domEl = getDomEl.bind(this, [...itemUpdate.prev.parrent, itemUpdate.prev.id], true)();
+                    html = '';
+                    console.log({ domEl });
 
-                    function sumHtml(index, init = false, create = false) {
-                        const el = this.vdom.find(el => el.id === index);
-                        if(el.tag.includes(`r-if="false"`)){
-                            return;
-                        }
-                        if (!init || create) {
-                            html += el.tag + el.innerTEXT;
-                        }
-                        this.vdom.find(el => el.id === index).childrens.forEach((childId) => {
-                            sumHtml.bind(this, childId)();
-                        });
-                        if (!init || create) {
-                            html += el.closedtag;
-                        }
-                    }
-
-                    switch (itemUpdate.event) {
+                    switch (itemUpdate.type) {
                         case "delete":
                             domEl.remove();
                             break;
                         case "create":
-                            domEl = getDomEl.bind(this, [...itemUpdate.el.parrent])();
-                            sumHtml.bind(this, itemUpdate.el.id, true, true)();
-                            if (domEl.children[itemUpdate.el.numChild - 1]) {
-                                domEl.children[itemUpdate.el.numChild - 1].insertAdjacentHTML('afterend', html);
-                            } else if (domEl.children.length === 0) {
-                                domEl.innerHTML = html;
-                            } else {
-                                domEl.children[itemUpdate.el.numChild].insertAdjacentHTML('beforebegin', html);
-                            }
-                            break;
-                        case "innerTEXT":
-                            domEl = getDomEl.bind(this, [...itemUpdate.el.parrent])();
-                            sumHtml.bind(this, itemUpdate.el.parrent[itemUpdate.el.parrent.length - 1], true)();
+                            sumHtml.bind(this, itemUpdate.el.id, true, true, true)();
+                            console.log({ html })
                             domEl.innerHTML = html;
-                            //console.log({html});
+                            break;
+                        case "text":
+                            domEl.innerText = itemUpdate.el.innerTEXT;
                             break;
                     }
                 });
-                this.prevVdom = this.vdom;
+                this.prevVdom = JSON.parse(JSON.stringify(this.vdom));
             } else {
-                document.querySelector('.main').innerHTML = currentDom;
+                this.vdom = domBuilder.build(currentDom);
+                sumHtml.bind(this, 1, true, true)();
+                document.querySelector('.main').innerHTML = html;
                 this.init = false;
                 this.prevVdom = domBuilder.build(currentDom);
             }
@@ -345,8 +378,6 @@
 
     function main() {
         Render.renderDom();
-        //initfix
-        Render.renderDom();
 
     }
 
@@ -354,3 +385,4 @@
 
 </script>
 
+</html>
