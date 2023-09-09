@@ -9,8 +9,7 @@
 </head>
 <style>
     body {
-        background: url("https://sun9-48.userapi.com/impg/6jD1oXeueLCIIUKphDraApzWOckzvQNw4J7FeQ/deK8qykHaNY.jpg?size=810x1080&quality=96&sign=293d0eb70cb37200f35d55b510a8c38b&c_uniq_tag=CDHD3qxNC2cK1Xg8qzVYlvQUwQ5_R8riTGFQjhoyO3s&type=album");
-        background-size: cover;
+        background: url("https://studio.uxpincdn.com/studio/wp-content/uploads/2020/12/7-Best-Reasons-To-Use-React.js-Components-In-Your-Project.png.webp");
         font-family: 'Roboto', sans-serif;
         font-size: 14px;
     }
@@ -95,7 +94,7 @@
                 </div>
                 <button class="btn btn-primary" onclick="runEvent('${this.name}', 'serf')">
                     <span r-if="${this.state.serf}">ладно поняль(</span>
-                    <span r-if="${!this.state.serf}">целый день играть в сабей серфер</span>
+                    <span r-if="${!this.state.serf}">целый день играть в сабвей серфер</span>
                 </button>
                 <div class="d-flex jusitfy-content-center flex-column" r-if="${!this.state.serf}">
                     <div>список дел на сегодня:</div>
@@ -125,6 +124,7 @@
         add() {
             if (this.state.current.length > 0 && !this.state.todos.find(item => item.title === this.state.current)) {
                 this.state.todos.push({ title: this.state.current, complete: false });
+                this.state.current = '';
             }
         }
 
