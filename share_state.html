@@ -6,6 +6,9 @@
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 
     <script src="dombuilder.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.8.1/rxjs.umd.min.js"
+        integrity="sha512-D9LDs8YUUVa4V9Gl4Zb+xqRAc7RCzooR3+zzebgK2RMu/KU+dh90pbjEEMzPiSyRSGbSp9j1pZnrO4joGa5WEg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <style>
     body {
@@ -61,6 +64,13 @@
 </body>
 
 <script>
+    const { Subject } = rxjs;
+
+    class store {
+        btnEvent = new Subject();
+    };
+    let _store = new store();
+
     var Render;
     var domBuilder = new BuilderDOM();
 
@@ -85,7 +95,14 @@
                 { complete: false, title: 'приготовить ужин' }
             ]
         };
-
+        init = () => {
+            _store.btnEvent.subscribe((serf) => {
+                runEvent(this.name, 'setSerf', serf);
+            });
+        }
+        setSerf = (serf) => {
+            this.state.serf = serf;
+        }
         body() {
             return `
 
@@ -95,10 +112,7 @@
                  <div r-if="${this.state.serf}">
                 получишь по жопе
                 </div>
-                <button class="btn btn-primary" onclick="runEvent('${this.name}', 'serf')">
-                    <span r-if="${this.state.serf}">ладно поняль(</span>
-                    <span r-if="${!this.state.serf}">целый день играть в сабвей серфер</span>
-                </button>
+                <btn></btn>
                 <div class="d-flex jusitfy-content-center flex-column" r-if="${!this.state.serf}">
                     <div>список дел на сегодня:</div>
                     <ul>
@@ -127,7 +141,6 @@
         add() {
             if (this.state.current.length > 0 && !this.state.todos.find(item => item.title === this.state.current)) {
                 this.state.todos.push({ title: this.state.current, complete: false });
-                this.state.current = '';
             }
         }
 
@@ -137,6 +150,30 @@
 
         complete(title) {
             this.state.todos.find(item => item.title === title).complete = !this.state.todos.find(item => item.title === title).complete;
+        }
+    }
+
+    class component_btn extends component {
+
+        state = {
+            serf: false
+        }
+        init = () => {
+            _store.btnEvent.subscribe((serf) => {
+                runEvent(this.name, 'setSerf', serf);
+            });
+        }
+        serf = () => {
+            _store.btnEvent.next(!this.state.serf);
+        }
+        setSerf = (serf) => {
+            this.state.serf = serf;
+        }
+        body() {
+            return `<button class="btn btn-primary" onclick="runEvent('${this.name}', 'serf')">
+                    <span r-if="${this.state.serf}">ладно поняль(</span>
+                    <span r-if="${!this.state.serf}">целый день играть в сабвей серфер</span>
+            </button>`
         }
     }
 
@@ -185,6 +222,10 @@
                     name: 'todo',
                     component: component_todo
                 },
+                {
+                    name: 'btn',
+                    component: component_btn
+                }
             ];
             this.currentDom = document.querySelector('.main').innerHTML.trim().split("\n");
         }
