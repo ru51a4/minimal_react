@@ -109,7 +109,7 @@
                     <div>список дел на сегодня:</div>
                     <ul>
                         ${this.state.todos.reduce((acc, item, i) => acc +
-                `       <myLi r-index="${i}">
+                `       <my-li r-index="${i}">
                         ` + "\n", '')}
                     </ul>
                     <input class="form-control" type="text" onchange="model('${this.name}', {event: event, key: 'current'})">
@@ -146,7 +146,7 @@
             component: component_todo
         },
         {
-            name: 'myLi',
+            name: 'my-li',
             component: component_li
         }
     ];

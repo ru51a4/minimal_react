@@ -15,7 +15,7 @@ ddd
 </div>
 </div>
 </html>
-*/https://www.unpkg.com/superxmlparser74@1.0.3/dist/bundle.js
+*/
 
 
 class dom_element {
@@ -38,7 +38,6 @@ class dom_element_reverse {
     closedtag;
     visible = true;
     rIf = false;
-    attr = [];
 }
 
 class BuilderDOM {
@@ -51,33 +50,6 @@ class BuilderDOM {
     }
 
     _html_to_dom(str) {
-        let res = [];
-        let parentStack = [];
-        superxmlparser74.parse(str, (item) => {
-            //opentag
-            let el = new dom_element_reverse();
-            el.attr = item.attr;
-            el.tag = item.tag;
-            res.push(el);
-            el.attr.push({
-                key: 'tag',
-                value: [item.tag]
-            })
-            if (parentStack[parentStack.length - 1] && el.tag !== 'script') {
-                parentStack[parentStack.length - 1].childrens.push(el)
-            }
-            if (!utils.noEndTag(el.tag)) {
-                parentStack.push(el);
-            }
-        }, (item) => {
-            //innertext
-            if (parentStack[parentStack.length - 1]) {
-                parentStack[parentStack.length - 1].innerTEXT += item.value;
-            }
-        }, (item) => {
-            //closedtag
-            parentStack.pop();
-        });
         var utils = {
             isOpenTag(str) {
                 return str && str.includes("<") && str.includes(">") && !str.includes("</");
@@ -220,4 +192,3 @@ class BuilderDOM {
         return reverseDom;
     }
 }
-
