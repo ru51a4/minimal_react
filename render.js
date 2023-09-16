@@ -17,7 +17,7 @@ class component {
 
     }
     getProps = (nameprop) => {
-        if (this.index === null) {
+        if (this.index === undefined) {
             return getProps(this.name, nameprop);
         }
         return getProps(this.name, nameprop, this.index);
