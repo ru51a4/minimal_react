@@ -65,21 +65,19 @@
 
 <script>
     var Render;
-
-    class component {
-        name = '';
-
-        constructor(_name) {
-            this.name = _name;
-        }
-        init = () => {
-
-        }
-        destroy = () => {
-
+    class component_li extends component {
+        state = {
+        };
+        body() {
+            return `<li class="${(this.getProps('todos', this.index).complete) ? 'complete' : ''}">
+                            <span>${this.getProps('todos', this.index).title}</span>
+                            <button class="btn btn-primary" onclick="runParrentEvent('${this.name}', 'complete', '${this.getProps('todos', this.index).title}')">
+                            <span r-if="${!this.getProps('todos', this.index).complete}">готово</span>
+                            <span r-if="${this.getProps('todos', this.index).complete}">отмена</span>
+                            </button>
+                        </li>`;
         }
     }
-
     class component_todo extends component {
         state = {
             serf: false,
@@ -107,15 +105,8 @@
                 <div class="d-flex jusitfy-content-center flex-column" r-if="${!this.state.serf}">
                     <div>список дел на сегодня:</div>
                     <ul>
-                        ${this.state.todos.reduce((acc, item) => acc +
-                `
-                        <li class="${(item.complete) ? 'complete' : ''}">
-                            <span>${item.title}</span>
-                            <button class="btn btn-primary" onclick="runEvent('${this.name}', 'complete', '${item.title}')">
-                            <span r-if="${!item.complete}">готово</span>
-                            <span r-if="${item.complete}">отмена</span>
-                            </button>
-                        </li>
+                        ${this.state.todos.reduce((acc, item, i) => acc +
+                `       <myLi r-index="${i}">
                         ` + "\n", '')}
                     </ul>
                     <input class="form-control" type="text" onchange="model('${this.name}', {event: event, key: 'current'})">
@@ -151,6 +142,10 @@
             name: 'todo',
             component: component_todo
         },
+        {
+            name: 'myLi',
+            component: component_li
+        }
     ];
 
     Render = new render(components);

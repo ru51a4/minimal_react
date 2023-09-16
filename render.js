@@ -4,6 +4,24 @@ var domBuilder = new BuilderDOM();
 var currentComponents = [];
 var components = {};
 
+class component {
+    name = '';
+    index = null;
+    constructor(_name) {
+        this.name = _name;
+    }
+    init = () => {
+
+    }
+    destroy = () => {
+
+    }
+    getProps = (nameprop, i) => {
+        return getProps(this.name, nameprop, i);
+    };
+}
+
+
 class render {
     currentDom;
     init = true;
@@ -27,6 +45,7 @@ class render {
             let $prevCurrComponents = [];
             function deep(tag) {
                 const tagName = this.utils.getTag(tag);
+                const rIfIndex = this.utils.getRIndex(tag);
                 if (!this.utils.isComponent(tagName)) {
                     currentDom += tag + "\n";
                 } else {
@@ -37,12 +56,13 @@ class render {
                     if (!component) {
                         let currentComponent = components.find((item) => item.name === tagName).component;
                         component = new currentComponent(currentName);
-                        component.init();
                         currentComponents.push({
                             name: currentName,
                             component: component,
                             hierarchy: hierarchyStack.join('.')
                         });
+                        component.index = rIfIndex;
+                        component.init();
                     } else {
                         component = component.component;
                     }
@@ -111,17 +131,11 @@ class render {
                 let elVdom = this.vdom[index];
                 let prevElVdom = this.prevVdom[index];
 
-                if (!elVdom) {
-                    stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "delete" })
-                    return;
-                }
-
                 let q1 = { ...elVdom, childrens: "" };
                 let q2 = { ...prevElVdom, childrens: "" };
                 if (JSON.stringify(q1) !== JSON.stringify(q2)) {
                     let qq = this.prevVdom.find((el) => el.id == q1.parrent[q1.parrent.length - 1])
                     let qq2 = this.prevVdom.find((el) => el.id == q2.parrent[q2.parrent.length - 1])
-
                     stackUpdateDom.push({ prev: qq2, el: qq, type: "create" })
                     return;
                 }
@@ -164,10 +178,6 @@ class render {
 
                     }
                 }
-                if (elVdom.innerTEXT.trim() !== prevElVdom.innerTEXT.trim()) {
-                    stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "text" })
-                    return;
-                }
 
             }
 
@@ -197,6 +207,7 @@ class render {
         } else {
             this.vdom = domBuilder.build(currentDom);
             sumHtml.bind(this, 1, true, true)();
+            console.log({ currentDom })
             document.querySelector('.main').innerHTML = html;
             this.init = false;
             this.prevVdom = domBuilder.build(currentDom);
@@ -209,7 +220,13 @@ class render {
             return components.map(item => item.name).includes(tag);
         },
         getTag(str) {
+            if (str.includes("r-index")) {
+                return str.split("</")[0].replace("<", "").replace(">", "").trim().split(" ")[0].trim();
+            }
             return str.split("</")[0].replace("<", "").replace(">", "").trim();
+        },
+        getRIndex(str) {
+            return str.split("r-index=\"")[1]?.split("\"")[0]
         }
     };
 }
@@ -222,7 +239,7 @@ function runEvent(name, nameEvent, arg) {
     Render.renderDom();
 }
 
-function runParrentEvent(name, nameEvent) {
+function runParrentEvent(name, nameEvent, arg) {
     let nameParrent = '';
     currentComponents.forEach((item) => {
         item = item.hierarchy.split('.');
@@ -230,7 +247,22 @@ function runParrentEvent(name, nameEvent) {
             nameParrent = item[item.length - 2];
         }
     });
-    runEvent(nameParrent, nameEvent);
+    console.log({ nameEvent })
+    runEvent(nameParrent, nameEvent, arg);
+}
+function getProps(name, nameprop, i) {
+    let nameParrent = '';
+    currentComponents.forEach((item) => {
+        item = item.hierarchy.split('.');
+        if (item[item.length - 1] === name) {
+            nameParrent = item[item.length - 2];
+        }
+    });
+    let c = currentComponents.find((item) => {
+        item = item.hierarchy.split('.');
+        return (item[item.length - 1] === nameParrent);
+    });
+    return c.component.state[nameprop][i];
 }
 
 function model(name, { event, key }) {
