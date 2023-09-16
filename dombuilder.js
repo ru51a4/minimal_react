@@ -24,14 +24,12 @@ class BuilderDOM {
         let res = [];
         let parentStack = [];
         let counter = 0;
-        let lvl = 0;
         let map = [];
         let p = [];
         superxmlparser74.parse(str,
             (item) => {
                 //opentag
-                lvl++;
-                let lvl_key = JSON.stringify([p, lvl]);
+                let lvl_key = JSON.stringify([p]);
                 if (item.attr.find(c => c['key'] == "r-if")?.value[0] === "false") {
 
                 }
@@ -74,7 +72,6 @@ class BuilderDOM {
             (item) => {
                 //closedtag
                 parentStack.pop();
-                lvl--;
                 p.pop();
             });
         console.log(res);
