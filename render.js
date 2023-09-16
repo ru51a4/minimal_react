@@ -41,8 +41,6 @@ class render {
         this.currentDom.forEach((tag) => {
             //deep
             var hierarchyStack = [];
-            let $currComponents = [];
-            let $prevCurrComponents = [];
             function deep(tag) {
                 const tagName = this.utils.getTag(tag);
                 const rIfIndex = this.utils.getRIndex(tag);
@@ -52,7 +50,6 @@ class render {
                     const currentName = `${tagName}-${counter++}`;
                     let component = currentComponents.find(item => item.name === currentName);
                     hierarchyStack.push(currentName);
-                    $currComponents.push(currentName)
                     if (!component) {
                         let currentComponent = components.find((item) => item.name === tagName).component;
                         component = new currentComponent(currentName);
@@ -75,12 +72,6 @@ class render {
             }
 
             deep.bind(this, tag)();
-            $prevCurrComponents.forEach(($item) => {
-                if (!$currComponents.includes($item)) {
-                    currentComponents.find((c) => c.name === $item).destroy();
-                }
-            });
-            $prevCurrComponents = $currComponents;
 
             //
         });
@@ -239,7 +230,7 @@ function runEvent(name, nameEvent, arg) {
     Render.renderDom();
 }
 
-function runParrentEvent(name, nameEvent, arg) {
+function runParentEvent(name, nameEvent, arg) {
     let nameParrent = '';
     currentComponents.forEach((item) => {
         item = item.hierarchy.split('.');
