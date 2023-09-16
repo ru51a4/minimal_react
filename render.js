@@ -16,8 +16,8 @@ class component {
     destroy = () => {
 
     }
-    getProps = (nameprop, i) => {
-        return getProps(this.name, nameprop, i);
+    getProps = (nameprop) => {
+        return getProps(this.name, nameprop, this.index);
     };
 }
 

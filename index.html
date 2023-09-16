@@ -68,12 +68,15 @@
     class component_li extends component {
         state = {
         };
+        props = () => {
+            return this.getProps('todos');
+        }
         body() {
-            return `<li class="${(this.getProps('todos', this.index).complete) ? 'complete' : ''}">
-                            <span>${this.getProps('todos', this.index).title}</span>
-                            <button class="btn btn-primary" onclick="runParrentEvent('${this.name}', 'complete', '${this.getProps('todos', this.index).title}')">
-                            <span r-if="${!this.getProps('todos', this.index).complete}">готово</span>
-                            <span r-if="${this.getProps('todos', this.index).complete}">отмена</span>
+            return `<li class="${(this.props().complete) ? 'complete' : ''}">
+                            <span>${this.props().title}</span>
+                            <button class="btn btn-primary" onclick="runParrentEvent('${this.name}', 'complete', '${this.props().title}')">
+                            <span r-if="${!this.props().complete}">готово</span>
+                            <span r-if="${this.props().complete}">отмена</span>
                             </button>
                         </li>`;
         }
