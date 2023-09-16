@@ -160,6 +160,9 @@ class BuilderDOM {
             if (tag.includes('li')) {
                 return "</li>";
             }
+            if (tag.includes('li')) {
+                return "</li>";
+            }
             if (tag.includes('input')) {
                 return "</span>";
             }

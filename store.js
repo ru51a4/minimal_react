@@ -1,6 +1,6 @@
-const { Subject } = rxjs;
+//const { Subject } = rxjs;
 
-class store {
-    btnEvent = new Subject();
-};
-var _store = new store();
+//class store {
+//    btnEvent = new Subject();
+//};
+//var _store = new store();
