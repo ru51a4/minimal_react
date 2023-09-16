@@ -131,8 +131,8 @@ class render {
                 let q1 = { ...elVdom, childrens: "" };
                 let q2 = { ...prevElVdom, childrens: "" };
                 if (JSON.stringify(q1) !== JSON.stringify(q2)) {
-                    let qq = this.prevVdom.find((el) => el.id == q1.parrent[q1.parrent.length - 1])
-                    let qq2 = this.prevVdom.find((el) => el.id == q2.parrent[q2.parrent.length - 1])
+                    let qq = this.prevVdom.find((el) => el.id == q1.parent[q1.parent.length - 1])
+                    let qq2 = this.prevVdom.find((el) => el.id == q2.parent[q2.parent.length - 1])
                     stackUpdateDom.push({ prev: qq2, el: qq, type: "create" })
                     return;
                 }
@@ -180,7 +180,7 @@ class render {
             deepReplace.bind(this, 1)();
 
             stackUpdateDom.forEach((itemUpdate) => {
-                let domEl = getDomEl.bind(this, [...itemUpdate.prev.parrent, itemUpdate.prev.id], true)();
+                let domEl = getDomEl.bind(this, [...itemUpdate.prev.parent, itemUpdate.prev.id], true)();
                 html = '';
                 switch (itemUpdate.type) {
                     case "delete":
@@ -233,26 +233,26 @@ function runEvent(name, nameEvent, arg) {
 }
 
 function runParentEvent(name, nameEvent, arg) {
-    let nameParrent = '';
+    let nameparent = '';
     currentComponents.forEach((item) => {
         item = item.hierarchy.split('.');
         if (item[item.length - 1] === name) {
-            nameParrent = item[item.length - 2];
+            nameparent = item[item.length - 2];
         }
     });
-    runEvent(nameParrent, nameEvent, arg);
+    runEvent(nameparent, nameEvent, arg);
 }
 function getProps(name, nameprop, i = null) {
-    let nameParrent = '';
+    let nameparent = '';
     currentComponents.forEach((item) => {
         item = item.hierarchy.split('.');
         if (item[item.length - 1] === name) {
-            nameParrent = item[item.length - 2];
+            nameparent = item[item.length - 2];
         }
     });
     let c = currentComponents.find((item) => {
         item = item.hierarchy.split('.');
-        return (item[item.length - 1] === nameParrent);
+        return (item[item.length - 1] === nameparent);
     });
     if (i) {
         return c.component.state[nameprop][i];
