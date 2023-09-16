@@ -4,7 +4,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-
+    <script src="https://www.unpkg.com/superxmlparser74@1.0.3/dist/bundle.js"></script>
     <script src="dombuilder.js"></script>
     <script src="render.js"></script>
     <script src="store.js"></script>
@@ -74,7 +74,7 @@
         body() {
             return `<li class="${(this.props().complete) ? 'complete' : ''}">
                             <span>${this.props().title}</span>
-                            <button class="btn btn-primary" onclick="runParrentEvent('${this.name}', 'complete', '${this.props().title}')">
+                            <button class="btn btn-primary" onclick="runParentEvent('${this.name}', 'complete', '${this.props().title}')">
                             <span r-if="${!this.props().complete}">готово</span>
                             <span r-if="${this.props().complete}">отмена</span>
                             </button>

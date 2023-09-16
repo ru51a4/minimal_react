@@ -17,6 +17,9 @@ class component {
 
     }
     getProps = (nameprop) => {
+        if (this.index === null) {
+            return getProps(this.name, nameprop);
+        }
         return getProps(this.name, nameprop, this.index);
     };
 }
@@ -238,10 +241,9 @@ function runParentEvent(name, nameEvent, arg) {
             nameParrent = item[item.length - 2];
         }
     });
-    console.log({ nameEvent })
     runEvent(nameParrent, nameEvent, arg);
 }
-function getProps(name, nameprop, i) {
+function getProps(name, nameprop, i = null) {
     let nameParrent = '';
     currentComponents.forEach((item) => {
         item = item.hierarchy.split('.');
