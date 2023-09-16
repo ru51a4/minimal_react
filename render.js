@@ -262,7 +262,10 @@ function getProps(name, nameprop, i) {
         item = item.hierarchy.split('.');
         return (item[item.length - 1] === nameParrent);
     });
-    return c.component.state[nameprop][i];
+    if (i) {
+        return c.component.state[nameprop][i];
+    }
+    return c.component.state[nameprop]
 }
 
 function model(name, { event, key }) {
