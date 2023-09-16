@@ -81,39 +81,42 @@ class render {
         let html = '';
         let htmllvl = 0;
         function sumHtml(index, init = false, create = false, sss = false) {
+            let ff = false;
             if (sss) {
+                ff = true;
                 htmllvl = 0;
             } else {
                 htmllvl++;
             }
-            const el = this.vdom.find(el => el.id === index);
-            if (el.tag.includes(`r-if="false"`)) {
+            const node = this.vdom.find(el => el.id === index);
+            if (!node || node?.attr.find((c) => c['key'] === 'r-if')?.value[0] == 'false') {
                 return;
             }
             if (htmllvl !== 0) {
-                html += el.tag + el.innerTEXT;
+                html += '<' + node.tag + ((node.attr.length > 1) ? ' ' : '') + `${node.attr.reduce((acc, item, i) => acc + ((item.key !== 'tag') ? `${item.key}="${item.value.join(" ")}"${((node.attr.length - 1 != i + 1) ? ' ' : '')}` : ''), '')}` + ">"
+                html += node.innerTEXT;
             }
-            el.childrens.forEach((childId) => {
+            node.childrens.forEach((childId) => {
                 sumHtml.bind(this, childId, true, true)();
             });
-            if (htmllvl !== 0) {
-                html += el.closedtag;
+            if (!ff) {
+                html += '</' + node.tag + '>';
             }
         }
         //todo dom
         if (!this.init) {
             function getDomEl(virtualDomStack, ff) {
                 let currentDocumentDom = document.querySelector('.main');
-
                 for (let i = 1; i <= virtualDomStack.length - 1; i++) {
+                    console.log({ "asd": this.vdom.find(el => el.id == virtualDomStack[i]) })
+
                     let numChild = this.vdom.find(el => el.id == virtualDomStack[i]).numChild;
-                    console.log({ numChild })
                     if (currentDocumentDom.children[numChild]) {
 
                         currentDocumentDom = currentDocumentDom.children[numChild];
                     }
                 }
-
+                console.log({ currentDocumentDom })
                 return currentDocumentDom;
             }
             var stackUpdateDom = [];
@@ -145,7 +148,6 @@ class render {
                     if (JSON.stringify(cc1) != JSON.stringify(cc2)) {
                         let q1 = { ...cc1, childrens: "" };
                         let q2 = { ...cc2, childrens: "" };
-                        console.log({ q1, q2 })
                         if (JSON.stringify(q1) !== JSON.stringify(q2)) {
                             stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "create" })
                             return;
@@ -177,12 +179,9 @@ class render {
 
             deepReplace.bind(this, 1)();
 
-            console.log({ stackUpdateDom })
             stackUpdateDom.forEach((itemUpdate) => {
                 let domEl = getDomEl.bind(this, [...itemUpdate.prev.parrent, itemUpdate.prev.id], true)();
                 html = '';
-                console.log({ domEl });
-
                 switch (itemUpdate.type) {
                     case "delete":
                         domEl.remove();
@@ -201,7 +200,7 @@ class render {
         } else {
             this.vdom = domBuilder.build(currentDom);
             sumHtml.bind(this, 1, true, true)();
-            console.log({ currentDom })
+            console.log({ "a": this.vdom })
             document.querySelector('.main').innerHTML = html;
             this.init = false;
             this.prevVdom = domBuilder.build(currentDom);
