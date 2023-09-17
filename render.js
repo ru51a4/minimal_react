@@ -108,7 +108,6 @@ class render {
             function getDomEl(virtualDomStack, ff) {
                 let currentDocumentDom = document.querySelector('.main');
                 for (let i = 1; i <= virtualDomStack.length - 1; i++) {
-                    console.log({ "asd": this.vdom.find(el => el.id == virtualDomStack[i]) })
 
                     let numChild = this.vdom.find(el => el.id == virtualDomStack[i]).numChild;
                     if (currentDocumentDom.children[numChild]) {
@@ -116,7 +115,6 @@ class render {
                         currentDocumentDom = currentDocumentDom.children[numChild];
                     }
                 }
-                console.log({ currentDocumentDom })
                 return currentDocumentDom;
             }
             var stackUpdateDom = [];
@@ -145,24 +143,12 @@ class render {
                 for (let i = 0; i <= c3 - 1; i++) {
                     let cc1 = this.vdom.find((el) => el.id == elVdom.childrens[i]);
                     let cc2 = this.prevVdom.find((el) => el.id == prevElVdom.childrens[i]);
-                    if (JSON.stringify(cc1) != JSON.stringify(cc2)) {
-                        let q1 = { ...cc1, childrens: "" };
-                        let q2 = { ...cc2, childrens: "" };
-                        if (JSON.stringify(q1) !== JSON.stringify(q2)) {
-                            stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "create" })
-                            return;
-                        } {
-                            var domElIndex;
-                            this.prevVdom.forEach((item, elIndex) => {
-                                if (cc1.id === item.id) {
-                                    domElIndex = elIndex;
-                                }
-                            });
-
-                            deepReplace.bind(this, domElIndex)();
-                        }
+                    let q1 = { ...cc1, childrens: "" };
+                    let q2 = { ...cc2, childrens: "" };
+                    if (JSON.stringify(q1) !== JSON.stringify(q2)) {
+                        stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "create" })
                         return;
-                    } else {
+                    } {
                         var domElIndex;
                         this.prevVdom.forEach((item, elIndex) => {
                             if (cc1.id === item.id) {
@@ -171,7 +157,6 @@ class render {
                         });
 
                         deepReplace.bind(this, domElIndex)();
-
                     }
                 }
 
@@ -188,7 +173,6 @@ class render {
                         break;
                     case "create":
                         sumHtml.bind(this, itemUpdate.el.id, true, true, true)();
-                        console.log({ html })
                         domEl.innerHTML = html;
                         break;
                     case "text":
@@ -200,7 +184,6 @@ class render {
         } else {
             this.vdom = domBuilder.build(currentDom);
             sumHtml.bind(this, 1, true, true)();
-            console.log({ "a": this.vdom })
             document.querySelector('.main').innerHTML = html;
             this.init = false;
             this.prevVdom = domBuilder.build(currentDom);
