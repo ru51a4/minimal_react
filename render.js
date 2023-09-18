@@ -45,8 +45,9 @@ class render {
             //deep
             var hierarchyStack = [];
             function deep(tag) {
-                const tagName = this.utils.getTag(tag);
-                const rIfIndex = this.utils.getRIndex(tag);
+                let tagData = this.utils.parseTag(tag);
+                const tagName = tagData?.tag?.trim();
+                const rIfIndex = tagData?.attr?.find((c) => c.key == 'r-index')?.value[0];
                 if (!this.utils.isComponent(tagName)) {
                     currentDom += tag + "\n";
                 } else {
@@ -195,14 +196,12 @@ class render {
         isComponent(tag) {
             return components.map(item => item.name).includes(tag);
         },
-        getTag(str) {
-            if (str.includes("r-index")) {
-                return str.split("</")[0].replace("<", "").replace(">", "").trim().split(" ")[0].trim();
-            }
-            return str.split("</")[0].replace("<", "").replace(">", "").trim();
-        },
-        getRIndex(str) {
-            return str.split("r-index=\"")[1]?.split("\"")[0]
+        parseTag(str) {
+            let data = {};
+            superxmlparser74.parse(str, (item) => {
+                data = item;
+            }, () => { }, () => { })
+            return data;
         }
     };
 }

@@ -74,7 +74,6 @@ class BuilderDOM {
                 parentStack.pop();
                 p.pop();
             });
-        console.log(res);
         return res;
 
 
