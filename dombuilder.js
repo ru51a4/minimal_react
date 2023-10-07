@@ -49,9 +49,7 @@ class BuilderDOM {
                 el.numChild = map[lvl_key];
                 el.parent = JSON.parse(JSON.stringify(p));
                 el.id = _key;
-                if (el.id !== 0 || el.id !== 1) {
-                    p.push(el.id);
-                }
+                p.push(el.id);
 
 
                 res.push(el);
