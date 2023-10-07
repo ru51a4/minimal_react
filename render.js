@@ -125,7 +125,6 @@ class render {
                     let q1 = { ...cc1, childrens: "" };
                     let q2 = { ...cc2, childrens: "" };
                     if (JSON.stringify(q1) !== JSON.stringify(q2)) {
-                        console.log({ q1 }, { q2 })
                         stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "create" })
                         return;
                     } {
@@ -136,7 +135,6 @@ class render {
             }
 
             deepReplace(this.vdom[0].id);
-            console.log({ stackUpdateDom })
 
             stackUpdateDom.forEach((itemUpdate) => {
                 let domEl = getDomEl([...itemUpdate.prev.parent, itemUpdate.prev.id]);

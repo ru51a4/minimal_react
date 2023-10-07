@@ -40,7 +40,7 @@ class BuilderDOM {
                     } else {
                         map[lvl_key]++;
                     }
-                    _key = `${p.length}-${counter++}`;
+                    _key = `${p.length}-${map[lvl_key]}`;
                 }
                 //
                 let el = new node();
