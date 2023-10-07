@@ -44,10 +44,10 @@ class render {
         this.currentDom.forEach((tag) => {
             //deep
             var hierarchyStack = [];
-            function deep(tag) {
+            let deep = (tag) => {
                 let tagData = this.utils.parseTag(tag);
                 const tagName = tagData?.tag?.trim();
-                const rIfIndex = tagData?.attr?.find((c) => c.key == 'r-index')?.value[0];
+                const rIForIndex = tagData?.attr?.find((c) => c.key == 'r-index')?.value[0];
                 if (!this.utils.isComponent(tagName)) {
                     currentDom += tag + "\n";
                 } else {
@@ -62,57 +62,44 @@ class render {
                             component: component,
                             hierarchy: hierarchyStack.join('.')
                         });
-                        component.index = rIfIndex;
+                        component.index = rIForIndex;
                         component.init();
                     } else {
                         component = component.component;
                     }
                     let currentComponentDom = component.body();
                     currentComponentDom.split("\n").forEach((tag) => {
-                        deep.bind(this, tag)();
+                        deep(tag);
                     });
                     hierarchyStack.pop(currentName);
                 }
             }
-
-            deep.bind(this, tag)();
-
+            deep(tag);
             //
         });
         let html = '';
-        let htmllvl = 0;
-        function sumHtml(index, init = false, create = false, sss = false) {
-            let ff = false;
-            if (sss) {
-                ff = true;
-                htmllvl = 0;
-            } else {
-                htmllvl++;
-            }
-            const node = this.vdom.find(el => el.id === index);
-            if (!node || node?.attr.find((c) => c['key'] === 'r-if')?.value[0] == 'false') {
+        let sumHtml = (node, init = false) => {
+            if (!node || node?.attr?.find((c) => c['key'] === 'r-if')?.value[0] == 'false') {
                 return;
             }
-            if (htmllvl !== 0) {
+            if (!init) {
                 html += '<' + node.tag + ((node.attr.length > 1) ? ' ' : '') + `${node.attr.reduce((acc, item, i) => acc + ((item.key !== 'tag') ? `${item.key}="${item.value.join(" ")}"${((node.attr.length - 1 != i + 1) ? ' ' : '')}` : ''), '')}` + ">"
                 html += node.innerTEXT;
             }
-            node.childrens.forEach((childId) => {
-                sumHtml.bind(this, childId, true, true)();
+            node.childrens.forEach((node) => {
+                sumHtml(node);
             });
-            if (!ff) {
+            if (!init) {
                 html += '</' + node.tag + '>';
             }
         }
         //todo dom
         if (!this.init) {
-            function getDomEl(virtualDomStack, ff) {
+            let getDomEl = (virtualDomStack) => {
                 let currentDocumentDom = document.querySelector('.main');
                 for (let i = 1; i <= virtualDomStack.length - 1; i++) {
-
                     let numChild = this.vdom.find(el => el.id == virtualDomStack[i]).numChild;
                     if (currentDocumentDom.children[numChild]) {
-
                         currentDocumentDom = currentDocumentDom.children[numChild];
                     }
                 }
@@ -120,10 +107,8 @@ class render {
             }
             var stackUpdateDom = [];
             this.vdom = domBuilder.build(currentDom);
-            let kek = false;
 
-
-            function deepReplace(index) {
+            let deepReplace = (index) => {
                 let elVdom = this.vdom[index];
                 let prevElVdom = this.prevVdom[index];
 
@@ -136,58 +121,49 @@ class render {
                     return;
                 }
 
-
-
                 let c1 = elVdom.childrens.length;
                 let c2 = prevElVdom.childrens.length;
                 let c3 = (c1 > c2) ? c1 : c2;
                 for (let i = 0; i <= c3 - 1; i++) {
-                    let cc1 = this.vdom.find((el) => el.id == elVdom.childrens[i]);
-                    let cc2 = this.prevVdom.find((el) => el.id == prevElVdom.childrens[i]);
+                    let cc1 = this.vdom.find((el) => el.id == elVdom.childrens[i].id);
+                    let cc2 = this.prevVdom.find((el) => el.id == prevElVdom.childrens[i].id);
                     let q1 = { ...cc1, childrens: "" };
                     let q2 = { ...cc2, childrens: "" };
                     if (JSON.stringify(q1) !== JSON.stringify(q2)) {
                         stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "create" })
                         return;
                     } {
-                        var domElIndex;
-                        this.prevVdom.forEach((item, elIndex) => {
-                            if (cc1.id === item.id) {
-                                domElIndex = elIndex;
-                            }
-                        });
-
-                        deepReplace.bind(this, domElIndex)();
+                        deepReplace(cc1.id);
                     }
                 }
 
             }
 
-            deepReplace.bind(this, 1)();
+            deepReplace(1);
 
             stackUpdateDom.forEach((itemUpdate) => {
-                let domEl = getDomEl.bind(this, [...itemUpdate.prev.parent, itemUpdate.prev.id], true)();
+                let domEl = getDomEl([...itemUpdate.prev.parent, itemUpdate.prev.id]);
                 html = '';
                 switch (itemUpdate.type) {
                     case "delete":
-                        domEl.remove();
+                        //todo
                         break;
                     case "create":
-                        sumHtml.bind(this, itemUpdate.el.id, true, true, true)();
+                        sumHtml(itemUpdate.el, true);
                         domEl.innerHTML = html;
                         break;
                     case "text":
-                        domEl.innerText = itemUpdate.el.innerTEXT;
+                        //todo
                         break;
                 }
             });
-            this.prevVdom = JSON.parse(JSON.stringify(this.vdom));
+            this.prevVdom = this.vdom;
         } else {
             this.vdom = domBuilder.build(currentDom);
-            sumHtml.bind(this, 1, true, true)();
+            sumHtml(this.vdom[0], true);
             document.querySelector('.main').innerHTML = html;
             this.init = false;
-            this.prevVdom = domBuilder.build(currentDom);
+            this.prevVdom = this.vdom;
         }
         ////////////
     }

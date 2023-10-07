@@ -46,7 +46,7 @@ class BuilderDOM {
                 el.tag = item.tag.trim();
                 el.numChild = map[lvl_key];
                 el.parent = JSON.parse(JSON.stringify(p));
-                el.id = counter++;
+                el.id = counter++
                 if (el.id !== 0 || el.id !== 1) {
                     p.push(el.id);
                 }
@@ -58,7 +58,7 @@ class BuilderDOM {
                     value: [item.tag]
                 })
                 if (parentStack[parentStack.length - 1] && el.tag !== 'script') {
-                    parentStack[parentStack.length - 1].childrens.push(el.id)
+                    parentStack[parentStack.length - 1].childrens.push(el)
                 }
                 parentStack.push(el);
 
