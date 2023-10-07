@@ -108,28 +108,24 @@ class render {
             var stackUpdateDom = [];
             this.vdom = domBuilder.build(currentDom);
 
-            let deepReplace = (index) => {
-                let elVdom = this.vdom[index];
-                let prevElVdom = this.prevVdom[index];
-
-                let q1 = { ...elVdom, childrens: "" };
-                let q2 = { ...prevElVdom, childrens: "" };
-                if (JSON.stringify(q1) !== JSON.stringify(q2)) {
-                    let qq = this.prevVdom.find((el) => el.id == q1.parent[q1.parent.length - 1])
-                    let qq2 = this.prevVdom.find((el) => el.id == q2.parent[q2.parent.length - 1])
-                    stackUpdateDom.push({ prev: qq2, el: qq, type: "create" })
+            let deepReplace = (_id) => {
+                if (!_id) {
                     return;
                 }
+                let elVdom = this.vdom.find((el) => el.id == _id)
+                let prevElVdom = this.prevVdom.find((el) => el.id == _id)
 
-                let c1 = elVdom.childrens.length;
-                let c2 = prevElVdom.childrens.length;
+                let c1 = elVdom?.childrens?.length;
+                let c2 = prevElVdom?.childrens?.length;
+
                 let c3 = (c1 > c2) ? c1 : c2;
                 for (let i = 0; i <= c3 - 1; i++) {
-                    let cc1 = this.vdom.find((el) => el.id == elVdom.childrens[i].id);
-                    let cc2 = this.prevVdom.find((el) => el.id == prevElVdom.childrens[i].id);
+                    let cc1 = this.vdom.find((el) => el.id == elVdom?.childrens[i]?.id);
+                    let cc2 = this.prevVdom.find((el) => el.id == prevElVdom?.childrens[i]?.id);
                     let q1 = { ...cc1, childrens: "" };
                     let q2 = { ...cc2, childrens: "" };
                     if (JSON.stringify(q1) !== JSON.stringify(q2)) {
+                        console.log({ q1 }, { q2 })
                         stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "create" })
                         return;
                     } {
@@ -139,7 +135,8 @@ class render {
 
             }
 
-            deepReplace(1);
+            deepReplace(this.vdom[0].id);
+            console.log({ stackUpdateDom })
 
             stackUpdateDom.forEach((itemUpdate) => {
                 let domEl = getDomEl([...itemUpdate.prev.parent, itemUpdate.prev.id]);

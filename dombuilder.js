@@ -30,8 +30,9 @@ class BuilderDOM {
             (item) => {
                 //opentag
                 let lvl_key = JSON.stringify([p]);
+                let _key = '';
                 if (item.attr.find(c => c['key'] == "r-if")?.value[0] === "false") {
-
+                    _key = undefined
                 }
                 else {
                     if (map[lvl_key] == undefined) {
@@ -39,6 +40,7 @@ class BuilderDOM {
                     } else {
                         map[lvl_key]++;
                     }
+                    _key = `${p.length}-${counter++}`;
                 }
                 //
                 let el = new node();
@@ -46,7 +48,7 @@ class BuilderDOM {
                 el.tag = item.tag.trim();
                 el.numChild = map[lvl_key];
                 el.parent = JSON.parse(JSON.stringify(p));
-                el.id = counter++
+                el.id = _key;
                 if (el.id !== 0 || el.id !== 1) {
                     p.push(el.id);
                 }
