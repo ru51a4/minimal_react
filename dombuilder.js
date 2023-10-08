@@ -40,8 +40,9 @@ class BuilderDOM {
                     } else {
                         map[lvl_key]++;
                     }
-                    _key = JSON.stringify({ "p": p, "numChild": map[lvl_key] });
+                    _key = `_${p.join("-")}#${map[lvl_key]}`;
                 }
+
                 //
                 let el = new node();
                 el.attr = item.attr;
@@ -49,8 +50,7 @@ class BuilderDOM {
                 el.numChild = map[lvl_key];
                 el.parent = JSON.parse(JSON.stringify(p));
                 el.id = _key;
-                p.push(el.id);
-
+                p.push(map[lvl_key]);
 
                 res.push(el);
                 el.attr.push({

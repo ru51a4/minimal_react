@@ -98,7 +98,12 @@ class render {
             let getDomEl = (virtualDomStack) => {
                 let currentDocumentDom = document.querySelector('.main');
                 for (let i = 1; i <= virtualDomStack.length - 1; i++) {
-                    let numChild = this.vdom.find(el => el.id == virtualDomStack[i]).numChild;
+                    let numChild;
+                    if (Number(virtualDomStack[i]) === virtualDomStack[i]) {
+                        numChild = virtualDomStack[i];
+                    } else {
+                        numChild = this.vdom.find(el => el.id == virtualDomStack[i]).numChild;
+                    }
                     if (currentDocumentDom.children[numChild]) {
                         currentDocumentDom = currentDocumentDom.children[numChild];
                     }
@@ -135,7 +140,7 @@ class render {
             }
 
             deepReplace(this.vdom[0].id);
-
+            console.log(this.vdom);
             stackUpdateDom.forEach((itemUpdate) => {
                 let domEl = getDomEl([...itemUpdate.prev.parent, itemUpdate.prev.id]);
                 html = '';
