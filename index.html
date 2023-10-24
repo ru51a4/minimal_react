@@ -68,15 +68,12 @@
     class component_li extends component {
         state = {
         };
-        props = () => {
-            return this.getProps('todos');
-        }
         body() {
-            return `<li class="${(this.props().complete) ? 'complete' : ''}">
-                            <span>${this.props().title}</span>
-                            <button class="btn btn-primary" onclick="runParentEvent('${this.name}', 'complete', '${this.props().title}')">
-                            <span r-if="${!this.props().complete}">готово</span>
-                            <span r-if="${this.props().complete}">отмена</span>
+            return `<li class="${(this.getProps().complete) ? 'complete' : ''}">
+                            <span>${this.getProps().title}</span>
+                            <button class="btn btn-primary" onclick="runParentEvent('${this.name}', 'complete', '${this.getProps().title}')">
+                            <span r-if="${!this.getProps().complete}">готово</span>
+                            <span r-if="${this.getProps().complete}">отмена</span>
                             </button>
                         </li>`;
         }
@@ -109,7 +106,7 @@
                     <div>список дел на сегодня:</div>
                     <ul>
                         ${this.state.todos.reduce((acc, item, i) => acc +
-                `       <my-li r-index="${i}">
+                `       <my-li r-repeat="todos" r-index="${i}">
                         ` + "\n", '')}
                     </ul>
                     <input class="form-control" type="text" onchange="model('${this.name}', {event: event, key: 'current'})">

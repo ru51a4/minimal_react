@@ -7,6 +7,7 @@ var components = {};
 class component {
     name = '';
     index = null;
+    propKey = null;
     constructor(_name) {
         this.name = _name;
     }
@@ -20,7 +21,7 @@ class component {
         if (this.index === undefined) {
             return getProps(this.name, nameprop);
         }
-        return getProps(this.name, nameprop, this.index);
+        return getProps(this.name, this.propKey, this.index);
     };
 }
 
@@ -48,6 +49,8 @@ class render {
                 let tagData = this.utils.parseTag(tag);
                 const tagName = tagData?.tag?.trim();
                 const rIForIndex = tagData?.attr?.find((c) => c.key == 'r-index')?.value[0];
+                const rIForKey = tagData?.attr?.find((c) => c.key == 'r-repeat')?.value[0];
+
                 if (!this.utils.isComponent(tagName)) {
                     currentDom += tag + "\n";
                 } else {
@@ -63,6 +66,7 @@ class render {
                             hierarchy: hierarchyStack.join('.')
                         });
                         component.index = rIForIndex;
+                        component.propKey = rIForKey;
                         component.init();
                     } else {
                         component = component.component;
