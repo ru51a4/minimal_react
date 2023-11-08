@@ -54,12 +54,12 @@ class render {
                 if (!this.utils.isComponent(tagName)) {
                     currentDom += tag + "\n";
                 } else {
-                    let _key = hierarchyStack.join(".");
+                    let _key = hierarchyStack.join(".") + `#${tagName}`;
                     if (map[_key] === undefined) {
                         map[_key] = 0;
                     }
                     map[_key]++;
-                    const currentName = `${_key}#${tagName}-${map[_key]}`;
+                    const currentName = `${_key}-${map[_key]}`;
                     let component = currentComponents.find(item => item.name === currentName);
                     hierarchyStack.push(currentName);
                     if (!component) {

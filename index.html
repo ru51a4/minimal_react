@@ -71,11 +71,17 @@
         body() {
             return `<li class="${(this.getProps().complete) ? 'complete' : ''}">
                             <span>${this.getProps().title}</span>
+                            <div>
                             <button class="btn btn-primary" onclick="runParentEvent('${this.name}', 'complete', '${this.getProps().title}')">
                             <span r-if="${!this.getProps().complete}">готово</span>
                             <span r-if="${this.getProps().complete}">отмена</span>
                             </button>
-                        </li>`;
+
+                            <button class="btn mx-1 btn-danger" onclick="runParentEvent('${this.name}', 'del', '${this.getProps().title}')">
+                            <span>x</span>
+                            </button>
+                            </div>
+                            </li>`;
         }
     }
     class component_todo extends component {
@@ -133,6 +139,9 @@
 
         complete(title) {
             this.state.todos.find(item => item.title === title).complete = !this.state.todos.find(item => item.title === title).complete;
+        }
+        del(title) {
+            this.state.todos = this.state.todos.filter((c) => c.title !== title);
         }
     }
 
