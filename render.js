@@ -59,7 +59,7 @@ class render {
                         map[_key] = 0;
                     }
                     map[_key]++;
-                    const currentName = `${_key}-${map[_key]}`;
+                    const currentName = `${_key}#${tagName}-${map[_key]}`;
                     let component = currentComponents.find(item => item.name === currentName);
                     hierarchyStack.push(currentName);
                     if (!component) {
