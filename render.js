@@ -41,10 +41,10 @@ class render {
     renderDom() {
         var currentDom = '';
         let counter = 0;
-
+        var hierarchyStack = [];
+        let map = [];
         this.currentDom.forEach((tag) => {
             //deep
-            var hierarchyStack = [];
             let deep = (tag) => {
                 let tagData = this.utils.parseTag(tag);
                 const tagName = tagData?.tag?.trim();
@@ -54,7 +54,12 @@ class render {
                 if (!this.utils.isComponent(tagName)) {
                     currentDom += tag + "\n";
                 } else {
-                    const currentName = `${tagName}-${counter++}`;
+                    let _key = hierarchyStack.join(".");
+                    if (map[_key] === undefined) {
+                        map[_key] = 0;
+                    }
+                    map[_key]++;
+                    const currentName = `${_key}-${map[_key]}`;
                     let component = currentComponents.find(item => item.name === currentName);
                     hierarchyStack.push(currentName);
                     if (!component) {
@@ -81,6 +86,7 @@ class render {
             deep(tag);
             //
         });
+        console.log({ currentComponents })
         let html = '';
         let sumHtml = (node, init = false) => {
             if (!node || node?.attr?.find((c) => c['key'] === 'r-if')?.value[0] == 'false') {
