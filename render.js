@@ -11,10 +11,10 @@ class component {
     constructor(_name) {
         this.name = _name;
     }
-    init = () => {
+    init() {
 
     }
-    destroy = () => {
+    destroy() {
 
     }
     getProps = (nameprop) => {
@@ -32,6 +32,7 @@ class render {
     vdom = [];
     prevVdom = [];
     hiddenEls = [];
+    prevComponents = [];
 
     constructor(_components) {
         components = _components;
@@ -43,14 +44,16 @@ class render {
         let counter = 0;
         var hierarchyStack = [];
         let map = [];
+        let prevC = {};
+        let destroy = [];
+
         this.currentDom.forEach((tag) => {
             //deep
             let deep = (tag) => {
                 let tagData = this.utils.parseTag(tag);
                 const tagName = tagData?.tag?.trim();
-                const rIForIndex = tagData?.attr?.find((c) => c.key == 'r-index')?.value[0];
-                const rIForKey = tagData?.attr?.find((c) => c.key == 'r-repeat')?.value[0];
-
+                const rRepeatIndex = tagData?.attr?.find((c) => c.key == 'r-index')?.value[0];
+                const rRepeatKey = tagData?.attr?.find((c) => c.key == 'r-repeat')?.value[0];
                 if (!this.utils.isComponent(tagName)) {
                     currentDom += tag + "\n";
                 } else {
@@ -59,20 +62,68 @@ class render {
                         map[_key] = 0;
                     }
                     map[_key]++;
-                    const currentName = `${_key}-${map[_key]}`;
+                    let currentName = `${_key}-${map[_key]}`;
+                    if (rRepeatKey &&
+                        this.prevComponents.find((c) => c.name == currentName)) {
+                        let prevC = currentComponents.find((c) => c.name == hierarchyStack[hierarchyStack.length - 1]).component
+                        if (!destroy.includes(prevC.name)) {
+                            destroy.push(prevC.name)
+
+                            let prevArr =
+                                this.prevComponents.find((c) => c.name == prevC.name).component.state[rRepeatKey];
+                            let currArr = prevC.state[rRepeatKey];
+
+                            var diffIndexes = prevArr.map(c => c.index).filter((i) => {
+                                return !currArr.map(c => c.index).includes(i);
+                            });
+                            let j = 0;
+                            for (let i = 0; i <= prevArr.length - 1; i++) {
+                                j++;
+                                let name = `${_key}-${(map[_key]) + (i)}`
+                                let cc = currentComponents.find(c => c.name == name);
+                                if (diffIndexes.includes(i)) {
+
+                                    prevC.state = this.utils.setIndexes(prevC.state);
+                                    j--;
+                                    let arr = currentComponents.filter((c) => {
+                                        return c.hierarchy?.split(".")?.includes(cc.name);
+                                    });
+                                    arr.forEach((c) => {
+                                        c.component.destroy();
+                                        currentComponents = currentComponents.filter((d) => d.name !== c.name);
+                                    });
+                                } else {
+                                    let p = cc.name;
+                                    let _name = cc.name.split("-")
+                                    _name.pop();
+                                    _name = _name.join("-")
+                                    cc.name = _name + "-" + j;
+                                    cc.component.index = j - 1;
+                                    cc.component.name = cc.name;
+                                    for (let i = 0; i <= currentComponents.length - 1; i++) {
+                                        currentComponents[i].hierarchy = currentComponents[i].hierarchy?.split(p).join(cc.name);
+                                    }
+                                    currentName = currentName?.split(p).join(cc.name);
+                                }
+                            }
+
+                        }
+                    }
                     let component = currentComponents.find(item => item.name === currentName);
                     hierarchyStack.push(currentName);
                     if (!component) {
                         let currentComponent = components.find((item) => item.name === tagName).component;
                         component = new currentComponent(currentName);
+
                         currentComponents.push({
                             name: currentName,
                             component: component,
                             hierarchy: hierarchyStack.join('.')
                         });
-                        component.index = rIForIndex;
-                        component.propKey = rIForKey;
+                        component.index = rRepeatIndex;
+                        component.propKey = rRepeatKey;
                         component.init();
+                        component.state = this.utils.setIndexes(component.state);
                     } else {
                         component = component.component;
                     }
@@ -84,9 +135,8 @@ class render {
                 }
             }
             deep(tag);
-            //
+            //  
         });
-        console.log({ currentComponents })
         let html = '';
         let sumHtml = (node, init = false) => {
             if (!node || node?.attr?.find((c) => c['key'] === 'r-if')?.value[0] == 'false') {
@@ -167,6 +217,7 @@ class render {
                 }
             });
             this.prevVdom = this.vdom;
+            this.prevComponents = JSON.parse(JSON.stringify(currentComponents))
         } else {
             this.vdom = domBuilder.build(currentDom);
             sumHtml(this.vdom[0], true);
@@ -187,6 +238,19 @@ class render {
                 data = item;
             }, () => { }, () => { })
             return data;
+        },
+        setIndexes(arr) {
+            Object.keys(arr).forEach((key) => {
+                //todo 
+                if (Array.isArray(arr[key])) {
+                    arr[key] = arr[key].map((value, index) => {
+                        return {
+                            ...value, index: index,
+                        }
+                    });
+                }
+            });
+            return arr;
         }
     };
 }
@@ -221,7 +285,7 @@ function getProps(name, nameprop, i = null) {
         item = item.hierarchy.split('.');
         return (item[item.length - 1] === nameparent);
     });
-    if (i) {
+    if (i !== undefined) {
         return c.component.state[nameprop][i];
     }
     return c.component.state[nameprop]

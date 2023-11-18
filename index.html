@@ -75,13 +75,16 @@
                             <button class="btn btn-primary" onclick="runParentEvent('${this.name}', 'complete', '${this.getProps().title}')">
                             <span r-if="${!this.getProps().complete}">готово</span>
                             <span r-if="${this.getProps().complete}">отмена</span>
-                            </button>
+                            </button> 
 
                             <button class="btn mx-1 btn-danger" onclick="runParentEvent('${this.name}', 'del', '${this.getProps().title}')">
                             <span>x</span>
                             </button>
                             </div>
                             </li>`;
+        }
+        destroy() {
+            console.log('destroy', this.name)
         }
     }
     class component_todo extends component {
@@ -160,6 +163,7 @@
     Render = new render(components);
 
     function main() {
+        Render.renderDom();
         Render.renderDom();
 
     }
