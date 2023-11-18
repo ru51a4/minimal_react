@@ -54,6 +54,8 @@ class render {
                 const tagName = tagData?.tag?.trim();
                 const rRepeatIndex = tagData?.attr?.find((c) => c.key == 'r-index')?.value[0];
                 const rRepeatKey = tagData?.attr?.find((c) => c.key == 'r-repeat')?.value[0];
+                const rIf = tagData?.attr?.find((c) => c.key == 'r-if')?.value[0];
+
                 if (!this.utils.isComponent(tagName)) {
                     currentDom += tag + "\n";
                 } else {
@@ -63,6 +65,18 @@ class render {
                     }
                     map[_key]++;
                     let currentName = `${_key}-${map[_key]}`;
+
+                    if (rIf == "false") {
+                        currentComponents.filter((c) => {
+                            return c.hierarchy?.split(".")?.includes(currentName);
+                        }).forEach((c) => {
+                            c.component.destroy();
+                            currentComponents = currentComponents.filter((d) => d.name !== c.name);
+                        });
+                        return;
+                    }
+
+
                     if (rRepeatKey &&
                         this.prevComponents.find((c) => c.name == currentName)) {
                         let prevC = currentComponents.find((c) => c.name == hierarchyStack[hierarchyStack.length - 1]).component
@@ -85,10 +99,9 @@ class render {
 
                                     prevC.state = this.utils.setIndexes(prevC.state);
                                     j--;
-                                    let arr = currentComponents.filter((c) => {
+                                    currentComponents.filter((c) => {
                                         return c.hierarchy?.split(".")?.includes(cc.name);
-                                    });
-                                    arr.forEach((c) => {
+                                    }).forEach((c) => {
                                         c.component.destroy();
                                         currentComponents = currentComponents.filter((d) => d.name !== c.name);
                                     });
