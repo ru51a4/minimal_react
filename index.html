@@ -78,15 +78,15 @@
         state = {
         };
         body() {
-            return `<li class="${(this.getProps().complete) ? 'complete' : ''}">
-                            <span>${this.getProps().title}</span>
+            return `<li class="${(this.getProps()?.complete) ? 'complete' : ''}">
+                            <span>${this.getProps()?.title}</span>
                             <div>
-                            <button class="btn btn-primary" onclick="runParentEvent('${this.name}', 'complete', '${this.getProps().title}')">
-                            <span r-if="${!this.getProps().complete}">готово</span>
-                            <span r-if="${this.getProps().complete}">отмена</span>
+                            <button class="btn btn-primary" onclick="runParentEvent('${this.name}', 'complete', '${this.getProps()?.title}')">
+                            <span r-if="${!this.getProps()?.complete}">готово</span>
+                            <span r-if="${this.getProps()?.complete}">отмена</span>
                             </button> 
 
-                            <button class="btn mx-1 btn-danger" onclick="runParentEvent('${this.name}', 'del', '${this.getProps().title}')">
+                            <button class="btn mx-1 btn-danger" onclick="runParentEvent('${this.name}', 'del', '${this.getProps()?.title}')">
                             <span>x</span>
                             </button>
                             </div>
@@ -94,6 +94,9 @@
         }
         destroy() {
             console.log('destroy', this.name)
+        }
+        init() {
+            console.log('init', this.name)
         }
     }
     class component_todo extends component {
@@ -123,7 +126,8 @@
                         ${this.state.todos.reduce((acc, item, i) => acc +
                 `       <my-li r-repeat="todos" r-index="${i}">
                         ` + "\n", '')}
-                    </ul>
+                        ${this.state.todos.length == 0 ? '<my-li r-index="0" r-type="destroy" r-repeat="todos">' : ''}
+                    </ul> 
                     <input class="form-control" type="text" onchange="model('${this.name}', {event: event, key: 'current'})">
                     </input>
                     <button class="mt-2 btn btn-primary" onclick="runEvent('${this.name}', 'add')">добавить</button>
@@ -136,6 +140,7 @@
         };
 
         add() {
+            console.log({ asd: this.state.todos })
             if (this.state.current.length > 0 && !this.state.todos.find(item => item.title === this.state.current)) {
                 this.state.todos.push({ title: this.state.current, complete: false });
                 this.state.current = '';
