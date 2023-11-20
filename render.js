@@ -75,8 +75,15 @@ class render {
                     }
                     map[_key]++;
                     let currentName = `${_key}-${map[_key]}`;
-
                     if (rIf == "false") {
+                        let prevC = currentComponents.find((c) => c.name == hierarchyStack[hierarchyStack.length - 1]).component
+
+                        let prev =
+                            this.prevComponents.find((c) => c.name == prevC.name)?.component.state[rRepeatKey];
+                        let curr = prevC?.state?.[rRepeatKey];
+                        if (prev === curr) {
+                            return;
+                        }
                         currentComponents.filter((c) => {
                             return c.hierarchy?.split(".")?.includes(currentName);
                         }).forEach((c) => {
