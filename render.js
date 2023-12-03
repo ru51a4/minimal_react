@@ -59,11 +59,18 @@ class render {
         let lifeCycle = () => {
             let dfs = (node) => {
                 if (node?.attr?.find((c) => c['key'] === 'r-if')?.value[0] == 'true') {
+                    console.log({ node })
                     let key = node?.attr?.find((c) => c['key'] === 'r-key')?.value[0]
                     let prevValue =
                         this.prevComponents.find((c) => c.name == node.parentComponent)?.component?.state?.[key];
-                    if (prevValue) {
-                        destroys.push({ name: node.parentComponent, key, dComponents: this.prevVdom.filter((item) => c.left < node.left && c.right > node.right) })
+                    let currValue =
+                        currentComponents.find((c) => c.name == node.parentComponent)?.component?.state?.[key];
+
+                    if (currValue != prevValue) {
+                        destroys.push(...this.prevVdom.filter((item) => node.left < item.left && node.right > item.right)
+                            ?.filter((c) => c?.id?.includes("component"))
+                            ?.map(c => c.attr?.find((c) => c['key'] === 'r-name')?.value[0])
+                        )
                     }
                 }
                 node?.childrens?.forEach((node) => {
@@ -95,7 +102,15 @@ class render {
                     map[_key]++;
                     let currentName = `${_key}-${map[_key]}`;
 
-
+                    if (destroys.includes(currentName)) {
+                        currentComponents.filter((c) => {
+                            return c.hierarchy?.split(".")?.includes(currentName);
+                        }).forEach((c) => {
+                            c.component.destroy();
+                            currentComponents = currentComponents.filter((d) => d.name !== c.name);
+                        });
+                        return;
+                    }
                     if (rRepeatKey) {
                         let prevC = currentComponents.find((c) => c.name == hierarchyStack[hierarchyStack.length - 1]).component
 
@@ -239,10 +254,14 @@ class render {
                 for (let i = 0; i <= c3 - 1; i++) {
                     let cc1 = this.vdom.find((el) => el.id == elVdom?.childrens[i]?.id);
                     let cc2 = this.prevVdom.find((el) => el.id == prevElVdom?.childrens[i]?.id);
-                    let q1 = { ...cc1, childrens: "", parentComponent: "", left: '', right: '' };
-                    let q2 = { ...cc2, childrens: "", parentComponent: "", left: '', right: '' };
+                    let q1 = { ...cc1, childrens: "", parentComponent: "", parentNode: "", left: '', right: '' };
+                    let q2 = { ...cc2, childrens: "", parentComponent: "", parentNode: "", left: '', right: '' };
                     if (JSON.stringify(q1) !== JSON.stringify(q2)) {
-                        stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "create" })
+                        if (prevElVdom.id.includes('component')) {
+                            prevElVdom = prevElVdom.parentNode;
+                            elVdom = elVdom.parentNode;
+                        }
+                        stackUpdateDom.push({ el: elVdom, prev: prevElVdom, type: "create" })
                         return;
                     } {
                         deepReplace(cc1.id);
@@ -251,8 +270,6 @@ class render {
 
             }
             deepReplace(this.vdom[0].id);
-            console.log({ d: JSON.parse(JSON.stringify(stackUpdateDom)) })
-
             stackUpdateDom.forEach((itemUpdate) => {
                 let domEl = getDomEl([...itemUpdate.prev.parent, itemUpdate.prev.id]);
                 html = '';
@@ -269,6 +286,7 @@ class render {
                         break;
                 }
             });
+
             this.prevVdom = this.vdom;
             this.prevComponents = JSON.parse(JSON.stringify(currentComponents))
         } else {
@@ -292,15 +310,13 @@ class render {
             }, () => { }, () => { })
             return data;
         },
-        setIndexes(arr, init = false) {
+        setIndexes(arr) {
             Object.keys(arr).forEach((key) => {
                 //todo 
                 if (Array.isArray(arr[key])) {
-                    arr[key] = arr[key].filter((c) => {
-                        return !init || c.index !== undefined
-                    }).map((value, index) => {
+                    arr[key] = arr[key].map((value, index) => {
                         return {
-                            ...value, index: (!init) ? index : (value.index) ? value.index : 'new',
+                            ...value, index: index,
                         }
                     });
                 }

@@ -49,7 +49,7 @@ class BuilderDOM {
                     _key = undefined
                 }
                 else if (cName) {
-                    _key = cName;
+                    _key = cName + '#component';
                 }
                 else {
                     if (map[lvl_key] == undefined) {
@@ -66,6 +66,7 @@ class BuilderDOM {
                 el.tag = item.tag.trim();
                 el.numChild = map[lvl_key];
                 el.parent = JSON.parse(JSON.stringify(p));
+                el.parentNode = parentStack[parentStack.length - 1];
                 el.id = _key;
                 if (!item.attr.find(c => c['key'] == "r-name")?.value[0]) {
                     p.push(map[lvl_key]);

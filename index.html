@@ -121,7 +121,7 @@
                     <span r-if="${this.state.serf}">ладно поняль(</span>
                     <span r-if="${!this.state.serf}">целый день играть в сабвей серфер</span>
                 </button>
-                <div class="d-flex jusitfy-content-center flex-column" r-if="${!this.state.serf}">
+                <div class="d-flex jusitfy-content-center flex-column" r-key="serf" r-if="${!this.state.serf}">
                     <div>список дел на сегодня:</div>
                     <ul>
                         ${this.state.todos.reduce((acc, item, i) => acc +
@@ -133,7 +133,7 @@
                     </input>
                     <button class="mt-2 btn btn-primary" onclick="runEvent('${this.name}', 'add')">добавить</button>
                 </div>
-             <div r-key="surf" r-if="${this.state.serf}">
+                 <div r-key="serf" r-if="${this.state.serf}">
                     <kek> 
                 </div>
             </div>
