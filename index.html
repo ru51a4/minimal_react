@@ -102,6 +102,7 @@
     class component_todo extends component {
         state = {
             serf: false,
+            rif: true,
             current: '',
             todos: [
                 { complete: false, title: 'помыть посуду' },
@@ -115,12 +116,12 @@
 
              <div class="asda">
              <div class="asd">
-                 <kek r-if="${this.state.serf}">
+               
                 <button class="btn btn-primary" onclick="runEvent('${this.name}', 'serf')">
                     <span r-if="${this.state.serf}">ладно поняль(</span>
                     <span r-if="${!this.state.serf}">целый день играть в сабвей серфер</span>
                 </button>
-                <div class="d-flex jusitfy-content-center flex-column" r-if="${!this.state.serf}">
+                <div class="d-flex jusitfy-content-center flex-column" r-key="serf" r-if="${!this.state.serf}">
                     <div>список дел на сегодня:</div>
                     <ul>
                         ${this.state.todos.reduce((acc, item, i) => acc +
@@ -132,7 +133,9 @@
                     </input>
                     <button class="mt-2 btn btn-primary" onclick="runEvent('${this.name}', 'add')">добавить</button>
                 </div>
-
+                 <div r-key="serf" r-if="${this.state.serf}">
+                    <kek> 
+                </div>
             </div>
 
             </div>
@@ -178,6 +181,7 @@
     Render = new render(components);
 
     function main() {
+        Render.renderDom();
         Render.renderDom();
         Render.renderDom();
 

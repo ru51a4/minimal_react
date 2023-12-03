@@ -9,6 +9,10 @@ class node {
     visible = true;
     rIf = false;
     attr = [];
+    parentComponent = '';
+    left;
+    right;
+    rName;
 }
 
 class BuilderDOM {
@@ -25,14 +29,27 @@ class BuilderDOM {
         let parentStack = [];
         let counter = 0;
         let map = [];
+        let cmap = [];
         let p = [];
+        let component = '';
+        let cStack = [];
         superxmlparser74.parse(str,
             (item) => {
                 //opentag
                 let lvl_key = JSON.stringify([p]);
                 let _key = '';
+                let cName = item.attr.find(c => c['key'] == "r-name")?.value[0];
+                if (cName) {
+                    component = item.attr.find(c => c['key'] == "r-name")?.value[0];
+                    cStack.push({ type: 'component', component });
+                } else {
+                    cStack.push({ type: 'div', component: null });
+                }
                 if (item.attr.find(c => c['key'] == "r-if")?.value[0] === "false") {
                     _key = undefined
+                }
+                else if (cName) {
+                    _key = cName + '#component';
                 }
                 else {
                     if (map[lvl_key] == undefined) {
@@ -49,9 +66,14 @@ class BuilderDOM {
                 el.tag = item.tag.trim();
                 el.numChild = map[lvl_key];
                 el.parent = JSON.parse(JSON.stringify(p));
+                el.parentNode = parentStack[parentStack.length - 1];
                 el.id = _key;
-                p.push(map[lvl_key]);
-
+                if (!item.attr.find(c => c['key'] == "r-name")?.value[0]) {
+                    p.push(map[lvl_key]);
+                }
+                el.parentComponent = cStack.filter((c) => c.type === 'component')[cStack.filter((c) => c.type === 'component').length - 1]?.component;
+                el.left = counter++;
+                el.rName = item.attr.find(c => c['key'] == "r-name")?.value[0];
                 res.push(el);
                 el.attr.push({
                     key: 'tag',
@@ -70,6 +92,8 @@ class BuilderDOM {
                 }
             },
             (item) => {
+                parentStack[parentStack.length - 1].right = counter++
+                cStack.pop();
                 //closedtag
                 parentStack.pop();
                 p.pop();

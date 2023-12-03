@@ -55,7 +55,32 @@ class render {
         let map = [];
         let prevC = {};
         let destroy = [];
+        let destroys = [];
+        let lifeCycle = () => {
+            let dfs = (node) => {
+                if (node?.attr?.find((c) => c['key'] === 'r-if')?.value[0] == 'true') {
+                    let key = node?.attr?.find((c) => c['key'] === 'r-key')?.value[0]
+                    let prevValue =
+                        this.prevComponents.find((c) => c.name == node.parentComponent)?.component?.state?.[key];
+                    let currValue =
+                        currentComponents.find((c) => c.name == node.parentComponent)?.component?.state?.[key];
 
+                    if (currValue != prevValue) {
+                        destroys.push(...this.prevVdom.filter((item) => node.left < item.left && node.right > item.right)
+                            ?.filter((c) => c?.id?.includes("component"))
+                            ?.map(c => c.attr?.find((c) => c['key'] === 'r-name')?.value[0])
+                        )
+                    }
+                }
+                node?.childrens?.forEach((node) => {
+                    dfs(node);
+                });
+            }
+            dfs(this.prevVdom[0]);
+        }
+        if (this.prevVdom) {
+            lifeCycle();
+        }
         this.currentDom.forEach((tag) => {
             //deep
             let deep = (tag) => {
@@ -75,15 +100,8 @@ class render {
                     }
                     map[_key]++;
                     let currentName = `${_key}-${map[_key]}`;
-                    if (rIf == "false") {
-                        let prevC = currentComponents.find((c) => c.name == hierarchyStack[hierarchyStack.length - 1]).component
 
-                        let prev =
-                            this.prevComponents.find((c) => c.name == prevC.name)?.component.state[rRepeatKey];
-                        let curr = prevC?.state?.[rRepeatKey];
-                        if (prev === curr) {
-                            return;
-                        }
+                    if (destroys.includes(currentName)) {
                         currentComponents.filter((c) => {
                             return c.hierarchy?.split(".")?.includes(currentName);
                         }).forEach((c) => {
@@ -92,7 +110,6 @@ class render {
                         });
                         return;
                     }
-
                     if (rRepeatKey) {
                         let prevC = currentComponents.find((c) => c.name == hierarchyStack[hierarchyStack.length - 1]).component
 
@@ -171,19 +188,25 @@ class render {
                         component = component.component;
                     }
                     let currentComponentDom = component._body;
+                    currentDom += `<div r-name="${currentName}">`
                     currentComponentDom.split("\n").forEach((tag) => {
                         deep(tag);
                     });
+                    currentDom += `</div r-name="${currentName}">`
                     hierarchyStack.pop(currentName);
                 }
             }
             deep(tag);
+
             //  
         });
         let html = '';
         let sumHtml = (node, init = false) => {
             if (!node || node?.attr?.find((c) => c['key'] === 'r-if')?.value[0] == 'false') {
                 return;
+            }
+            if (node?.attr?.find((c) => c['key'] === 'r-name')?.value[0]) {
+                init = true;
             }
             if (!init) {
                 html += '<' + node.tag + ((node.attr.length > 1) ? ' ' : '') + `${node.attr.reduce((acc, item, i) => acc + ((item.key !== 'tag') ? `${item.key}="${item.value.join(" ")}"${((node.attr.length - 1 != i + 1) ? ' ' : '')}` : ''), '')}` + ">"
@@ -230,10 +253,14 @@ class render {
                 for (let i = 0; i <= c3 - 1; i++) {
                     let cc1 = this.vdom.find((el) => el.id == elVdom?.childrens[i]?.id);
                     let cc2 = this.prevVdom.find((el) => el.id == prevElVdom?.childrens[i]?.id);
-                    let q1 = { ...cc1, childrens: "" };
-                    let q2 = { ...cc2, childrens: "" };
+                    let q1 = { ...cc1, childrens: "", parentComponent: "", parentNode: "", left: '', right: '' };
+                    let q2 = { ...cc2, childrens: "", parentComponent: "", parentNode: "", left: '', right: '' };
                     if (JSON.stringify(q1) !== JSON.stringify(q2)) {
-                        stackUpdateDom.push({ prev: prevElVdom, el: elVdom, type: "create" })
+                        if (prevElVdom.id.includes('component')) {
+                            prevElVdom = prevElVdom.parentNode;
+                            elVdom = elVdom.parentNode;
+                        }
+                        stackUpdateDom.push({ el: elVdom, prev: prevElVdom, type: "create" })
                         return;
                     } {
                         deepReplace(cc1.id);
@@ -241,7 +268,6 @@ class render {
                 }
 
             }
-
             deepReplace(this.vdom[0].id);
             stackUpdateDom.forEach((itemUpdate) => {
                 let domEl = getDomEl([...itemUpdate.prev.parent, itemUpdate.prev.id]);
@@ -259,6 +285,7 @@ class render {
                         break;
                 }
             });
+
             this.prevVdom = this.vdom;
             this.prevComponents = JSON.parse(JSON.stringify(currentComponents))
         } else {
