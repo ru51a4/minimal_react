@@ -1,55 +1,21 @@
-class node {
-    id;
-    childrens = [];
-    innerTEXT = '';
-    parent = [];
-    numChild = 0;
-    tag;
-    closedtag;
-    visible = true;
-    rIf = false;
-    attr = [];
-    parentComponent = '';
-    left;
-    right;
-    rName;
-}
+class r_template {
+    render = (str, components) => {
+        _str = '';
+        let _render = (node) => {
 
-class BuilderDOM {
-    build(str) {
-        //todo
-        let strFix = "<dom>";
-        strFix += str;
-        strFix += "\n </dom>";
-        return this._html_to_dom(strFix)
-    }
-
-    _html_to_dom(str) {
+        }
         let res = [];
         let parentStack = [];
         let counter = 0;
         let map = [];
-        let cmap = [];
         let p = [];
-        let component = '';
-        let cStack = [];
         superxmlparser74.parse(str,
             (item) => {
                 //opentag
                 let lvl_key = JSON.stringify([p]);
                 let _key = '';
-                let cName = item.attr.find(c => c['key'] == "r-name")?.value[0];
-                if (cName) {
-                    component = item.attr.find(c => c['key'] == "r-name")?.value[0];
-                    cStack.push({ type: 'component', component });
-                } else {
-                    cStack.push({ type: 'div', component: null });
-                }
                 if (item.attr.find(c => c['key'] == "r-if")?.value[0] === "false") {
                     _key = undefined
-                }
-                else if (cName) {
-                    _key = cName;
                 }
                 else {
                     if (map[lvl_key] == undefined) {
@@ -67,12 +33,8 @@ class BuilderDOM {
                 el.numChild = map[lvl_key];
                 el.parent = JSON.parse(JSON.stringify(p));
                 el.id = _key;
-                if (!item.attr.find(c => c['key'] == "r-name")?.value[0]) {
-                    p.push(map[lvl_key]);
-                }
-                el.parentComponent = cStack.filter((c) => c.type === 'component')[cStack.filter((c) => c.type === 'component').length - 1]?.component;
-                el.left = counter++;
-                el.rName = item.attr.find(c => c['key'] == "r-name")?.value[0];
+                p.push(map[lvl_key]);
+
                 res.push(el);
                 el.attr.push({
                     key: 'tag',
@@ -91,14 +53,11 @@ class BuilderDOM {
                 }
             },
             (item) => {
-                parentStack[parentStack.length - 1].right = counter++
-                cStack.pop();
                 //closedtag
                 parentStack.pop();
                 p.pop();
             });
         return res;
 
-
-    }
+    };
 }
