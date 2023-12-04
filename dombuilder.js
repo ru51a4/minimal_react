@@ -37,15 +37,16 @@ class BuilderDOM {
             (item) => {
                 //opentag
                 let lvl_key = JSON.stringify([p]);
+                let remove = item.attr.find(c => c['key'] == "r-if")?.value[0] === 'false';
                 let _key = '';
                 let cName = item.attr.find(c => c['key'] == "r-name")?.value[0];
                 if (cName) {
                     component = item.attr.find(c => c['key'] == "r-name")?.value[0];
                     cStack.push({ type: 'component', component });
                 } else {
-                    cStack.push({ type: 'div', component: null });
+                    cStack.push({ type: 'div', component: null, remove });
                 }
-                if (item.attr.find(c => c['key'] == "r-if")?.value[0] === "false") {
+                if (remove) {
                     _key = undefined
                 }
                 else if (cName) {
@@ -68,7 +69,7 @@ class BuilderDOM {
                 el.parent = JSON.parse(JSON.stringify(p));
                 el.parentNode = parentStack[parentStack.length - 1];
                 el.id = _key;
-                if (!item.attr.find(c => c['key'] == "r-name")?.value[0] || item.attr.find(c => c['key'] == "r-if")?.value[0] === 'false') {
+                if (!item.attr.find(c => c['key'] == "r-name")?.value[0] && !remove) {
                     p.push(map[lvl_key]);
                 }
                 el.parentComponent = cStack.filter((c) => c.type === 'component')[cStack.filter((c) => c.type === 'component').length - 1]?.component;
@@ -97,7 +98,7 @@ class BuilderDOM {
                 let isComponent = cStack.pop();
                 //closedtag
                 parentStack.pop();
-                if (isComponent.type !== 'component') {
+                if (!isComponent.remove && isComponent.type !== 'component') {
                     p.pop();
                 }
             });
