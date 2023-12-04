@@ -118,8 +118,8 @@
              <div class="asd">
                
                 <button class="btn btn-primary" onclick="runEvent('${this.name}', 'serf')">
-                    <span r-if="${this.state.serf}">ладно поняль(</span>
-                    <span r-if="${!this.state.serf}">целый день играть в сабвей серфер</span>
+                    <span r-key="serf" r-if="${this.state.serf}">ладно поняль(</span>
+                    <span r-key="serf" r-if="${!this.state.serf}">целый день играть в сабвей серфер</span>
                 </button>
                 <div class="d-flex jusitfy-content-center flex-column" r-key="serf" r-if="${!this.state.serf}">
                     <div>список дел на сегодня:</div>
@@ -143,7 +143,6 @@
         };
 
         add() {
-            console.log({ asd: this.state.todos })
             if (this.state.current.length > 0 && !this.state.todos.find(item => item.title === this.state.current)) {
                 this.state.todos.push({ title: this.state.current, complete: false });
                 this.state.current = '';

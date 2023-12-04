@@ -68,7 +68,7 @@ class BuilderDOM {
                 el.parent = JSON.parse(JSON.stringify(p));
                 el.parentNode = parentStack[parentStack.length - 1];
                 el.id = _key;
-                if (!item.attr.find(c => c['key'] == "r-name")?.value[0]) {
+                if (!item.attr.find(c => c['key'] == "r-name")?.value[0] || item.attr.find(c => c['key'] == "r-if")?.value[0] === 'false') {
                     p.push(map[lvl_key]);
                 }
                 el.parentComponent = cStack.filter((c) => c.type === 'component')[cStack.filter((c) => c.type === 'component').length - 1]?.component;
@@ -92,11 +92,14 @@ class BuilderDOM {
                 }
             },
             (item) => {
+
                 parentStack[parentStack.length - 1].right = counter++
-                cStack.pop();
+                let isComponent = cStack.pop();
                 //closedtag
                 parentStack.pop();
-                p.pop();
+                if (isComponent.type !== 'component') {
+                    p.pop();
+                }
             });
         return res;
 

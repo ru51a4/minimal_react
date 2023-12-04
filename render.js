@@ -159,7 +159,6 @@ class render {
                                     for (let i = 0; i <= currentComponents.length - 1; i++) {
                                         currentComponents[i].hierarchy = currentComponents[i].hierarchy?.split(p).join(cc.name);
                                     }
-                                    currentName = currentName?.split(p).join(cc.name);
                                 }
 
                             }
