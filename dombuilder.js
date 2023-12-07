@@ -93,7 +93,9 @@ class BuilderDOM {
                 }
             },
             (item) => {
-
+                if (!parentStack.length) {
+                    return
+                }
                 parentStack[parentStack.length - 1].right = counter++
                 let isComponent = cStack.pop();
                 //closedtag
