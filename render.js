@@ -65,7 +65,7 @@ class render {
                     let currValue =
                         currentComponents.find((c) => c.name == node.parentComponent)?.component?.state?.[key];
 
-                    if (currValue != prevValue) {
+                    if (prevValue !== undefined && currValue != prevValue) {
                         destroys.push(...this.prevVdom.filter((item) => node.left < item.left && node.right > item.right)
                             ?.filter((c) => c?.id?.includes("component"))
                             ?.map(c => c.attr?.find((c) => c['key'] === 'r-name')?.value[0])
