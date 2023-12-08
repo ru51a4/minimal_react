@@ -27,7 +27,7 @@
             <ul class="nav nav-pills">
                 <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
                 <li class="nav-item zhs-menu-event"><a href="#" class="nav-link">zhs-menu</a>
-                    <div class="main">
+                    <div class="main zhs">
                         <menu></menu>
                     </div>
                 </li>
@@ -40,13 +40,10 @@
     </div>
     <style>
         .zhs {
-            position: absolute;
-            z-index: 100;
-            background: transparent;
             display: none;
         }
 
-        .zhs-menu-event:hover .app {
+        .zhs-menu-event:hover .zhs {
             display: block;
         }
 
@@ -118,14 +115,13 @@
             init() {
                 let kek = [];
                 _store.lvl.subscribe((e) => {
-                    console.log({ e })
                     let title = e?.title;
                     let lvl = e?.lvl;
                     if (e) {
                         kek = kek.filter((c) => c?.lvl < lvl);
                         kek.push(e);
                     }
-                    console.log({ kek })
+                    _store.clvls.next(kek)
                     let menu = this.state.menu;
                     let getParrent = (node, prev) => {
                         node.parent = prev?.title;
@@ -136,7 +132,6 @@
                     getParrent(menu);
 
                     let t = [];
-                    let cLvl = 1;
                     let queue = [...menu.childrens];
                     let res = [];
                     let c = [];
@@ -145,7 +140,7 @@
                         let item = queue.shift();
                         let next = (item.childrens.length) ? "➯" : "";
                         let display = (e === null) ? !res.length ? true : false : res.length <= lvl && !item.parent || kek.map(c => c.title).includes(item.parent) ? true : false;
-                        c.push({ ...item, next: next, display, margin: counter++ * 25 })
+                        c.push({ ...item, next: next, display })
                         t.push(...item.childrens);
                         if (!queue.length) {
                             counter = 0;
@@ -153,11 +148,9 @@
                             c = [];
                             queue.push(...t);
                             t = [];
-                            cLvl++
                         }
                     }
                     this.state.res = res
-                    console.log({ res })
                     Render.renderDom();
                 })
                 _store.lvl.next(null);
@@ -167,17 +160,17 @@
         class component_col extends component {
             state = {};
             init() {
-                console.log(this.getProps().val)
+                let lvl = this.getProps().index;
+                this.state.margin = _store.clvls.getValue().filter(c => c.lvl <= lvl).reduce((acc, item) => acc + item.i * 53, 0);
             }
             body() {
                 return `
-             <div class="zhs-menu--items">
-
-             ${Object.values(this.getProps().val)?.reduce((acc, item, i) => acc +
+             <div class="zhs-menu--items" style="margin-top:${this.state.margin}px">
+             ${Object.values(this.getProps().val)?.filter((c) => c.display).reduce((acc, item, i) => acc +
                     `
-                 <div onmousemove="_store.lvl.next({title:'${item.title}', lvl:${this.getProps().index + 1}})"class="zhs-menu--items--item" ${item.display ? '' : 'style="display:none;"'}>
+                 <div onmousemove="_store.lvl.next({title:'${item.title}', lvl:${this.getProps().index + 1}, i:${i}})"class="zhs-menu--items--item"'}>
                     <a href="#">
-                        ${item.title} ${item.next}
+                        ${item.title} ${item.next} 
                     </a>
                 </div>
                  ` + "\n", '')}
