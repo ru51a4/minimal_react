@@ -13,6 +13,7 @@ class component {
     }
     get _body() {
         if (!this.propKey || getProps(this.parent, this.propKey)?.length !== 0) {
+            _template.render(this.body())
             return this.body();
         }
         return ``;
@@ -133,6 +134,7 @@ class render {
                             var diffIndexes = prevArr.map(c => c.index).filter((i) => {
                                 return !currArr.map(c => c.index).includes(i);
                             });
+                            console.log({ diffIndexes })
                             let j = 0;
                             for (let i = 0; i <= prevArr.length - 1; i++) {
                                 j++;
