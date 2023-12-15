@@ -160,8 +160,12 @@
         class component_col extends component {
             state = {};
             init() {
+                console.log(this.name)
                 let lvl = this.getProps().index;
                 this.state.margin = _store.clvls.getValue().filter(c => c.lvl <= lvl).reduce((acc, item) => acc + item.i * 53, 0);
+            }
+            destroy() {
+                console.log('destroy', this.name)
             }
             body() {
                 return `
