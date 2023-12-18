@@ -1,0 +1,180 @@
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <script src="../../superxmlparser74.js"></script>
+    <script src="https://unpkg.com/rxjs@^7/dist/bundles/rxjs.umd.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"
+        integrity="sha512-b94Z6431JyXY14iSXwgzeZurHHRNkLt9d6bAHt7BZT38eqV+GyngIi/tVye4jBKPYQ2lBdRs0glww4fmpuLRwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="../../dombuilder.js"></script>
+    <script src="../../render.js"></script>
+    <script src="store.js"></script>
+    <script src="api.js"></script>
+    <script src="./components/header-menu/header-menu.component.js"></script>
+    <script src="./components/catalog/catalog.component.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container main">
+        <main></main>
+    </div>
+    <style>
+        .zhs {
+            display: none;
+        }
+
+        .zhs-menu-event:hover .zhs {
+            display: block;
+        }
+
+        .zhs-menu {
+            display: flex;
+        }
+
+        .zhs-menu .zhs-menu--items {
+            display: inline-flex;
+            flex-direction: column;
+        }
+
+        .zhs-menu .zhs-menu--items--item {
+            height: 50px;
+            margin: 1px;
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+            border-radius: .25rem;
+            padding: .5rem 1rem;
+            display: block;
+            cursor: pointer;
+            color: #fff;
+            background-color: #0d6efd;
+        }
+
+        .zhs-menu .zhs-menu--items--item a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+
+
+    <script>
+        var Render;
+        class component_main extends component {
+            state = {
+                data: {},
+                page: 1,
+            };
+            init() {
+                Api.getCatalog(1, this.state.page).then((data) => {
+                    _store.catalog.next(data.data)
+                });
+                _store.catalog.subscribe((data) => {
+                    this.state.data = data;
+                    setTimeout(() => {
+                        Render.renderDom();
+                    }, 0)
+                })
+            }
+            setPageNext() {
+                this.state.page++;
+                Api.getCatalog(1, this.state.page).then((data) => {
+                    _store.catalog.next(data.data)
+                });
+            }
+
+            setPagePrev() {
+                this.state.page--;
+                Api.getCatalog(1, this.state.page).then((data) => {
+                    _store.catalog.next(data.data)
+                });
+            }
+            body() {
+                return `
+                <div>
+                  <header class="d-flex flex-wrap justify-content-start py-3 mb-4 border-bottom">
+            <a href="/demo/iblockcms-frontend/" class="d-inline-flex align-items-center mb-3 mb-md-0 text-dark text-decoration-none">
+               
+                <span class="fs-4">IBLOCKCMS</span>
+            </a>
+
+            <ul class="nav nav-pills">
+                <li class="nav-item zhs-menu-event"><a href="#" class="nav-link">Каталог</a>
+                    <div class="zhs">
+                        <menu></menu>
+                    </div>
+                </li>
+
+                </ul>
+        </header>
+                <div>
+                    <catalog>
+                </div>
+                <div>
+                    <div class="d-flex flex-column">
+                        <div style="margin-left: auto;" class="mb-4 pagination">
+                            total - ${this.state.data?.count}
+                        </div>
+                        <div style="margin-left: auto;" class="pagination">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    ${(this.state?.page - 1 >= 1)
+                        ? `
+                                    <li class="page-item"><span style="cursor:pointer;" onclick="runEvent('${this.name}', 'setPagePrev')" class="page-link"><span>prev</span></span>
+                                            </li>
+                                    ` : ''
+                    }
+                                    <li class="page-item page-link active"><span>${this.state?.page}</span></li>
+                               ${(this.state?.page + 1 <= Math.ceil(this.state.data?.count / 5))
+                        ? `
+                                    <li class="page-item"><span style="cursor:pointer;" onclick="runEvent('${this.name}', 'setPageNext')" class="page-link"
+                                                    ><span>next</span></span>
+                                            </li>
+                                    ` : ''
+                    }
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                `;
+            }
+        }
+
+        var components = [
+            {
+                name: 'main',
+                component: component_main
+            },
+            {
+                name: 'menu',
+                component: component_menu
+            },
+            {
+                name: 'col',
+                component: component_col
+            },
+            {
+                name: 'catalog',
+                component: component_catalog
+            }
+        ];
+
+        Render = new render(components);
+
+        function _main() {
+            Render.renderDom();
+            Render.renderDom();
+            Render.renderDom();
+
+        }
+
+        _main();
+
+    </script>
+
+</html>

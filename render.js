@@ -145,6 +145,7 @@ class render {
                                     currentComponents.filter((c) => {
                                         return c.hierarchy?.split(".")?.includes(cc.name);
                                     }).forEach((c) => {
+
                                         c.component.destroy();
                                         currentComponents = currentComponents.filter((d) => d.name !== c.name);
                                     });
@@ -268,7 +269,6 @@ class render {
 
             }
             deepReplace(this.vdom[0].id);
-            console.log({ stackUpdateDom })
             stackUpdateDom.forEach((itemUpdate) => {
                 let domEl = getDomEl([...itemUpdate.prev.parent, itemUpdate.prev.id]);
                 html = '';
