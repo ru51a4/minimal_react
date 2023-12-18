@@ -269,6 +269,7 @@ class render {
 
             }
             deepReplace(this.vdom[0].id);
+            console.log({ stackUpdateDom })
             stackUpdateDom.forEach((itemUpdate) => {
                 let domEl = getDomEl([...itemUpdate.prev.parent, itemUpdate.prev.id]);
                 html = '';
