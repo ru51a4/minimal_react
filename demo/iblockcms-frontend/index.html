@@ -95,6 +95,7 @@
 
                 _store.cSection.subscribe((id) => {
                     this.state.cSection = id;
+                    this.state.page = 1;
                     this.fetch();
                 });
                 this.fetch();
@@ -175,6 +176,9 @@
                     </div>
                     </div>
                     </div>
+                     <footer class="pt-3 text-muted border-top">
+                        https to http plz
+                    </footer>
                 `;
             }
         }
