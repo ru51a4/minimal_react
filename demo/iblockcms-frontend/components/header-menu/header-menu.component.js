@@ -13,23 +13,30 @@ class component_menu extends component {
     }
     init() {
         let kek = [];
+        let init = false;
         _store.catalog.subscribe((data) => {
             if (!data) {
                 return;
             }
+            if (!init) {
+                init = true;
+            } else {
+                return;
+            }
             let $tree = data.tree
-
+            console.log($tree)
 
             let $zhsmenu = { "childrens": [] };
-            let $deep = ($c) => {
+            let $deep = ($c, id) => {
                 let $q = {};
                 $q["title"] = $c["key"];
+                $q['id'] = id;
                 for (let $key of Object.keys($c)) {
                     if (!$q["childrens"]) {
                         $q["childrens"] = [];
                     }
                     if (Number($key) == $key) {
-                        let qq = $deep($c[$key]);
+                        let qq = $deep($c[$key], $key);
                         $q["childrens"].push(qq);
                     }
                 }
@@ -37,9 +44,8 @@ class component_menu extends component {
                 return $q;
             };
 
-            $zhsmenu["childrens"] = $deep($tree[1]);
+            $zhsmenu["childrens"] = $deep($tree[1], 1);
             this.state.menu = $zhsmenu["childrens"];
-
             _store.lvl.next(null);
         });
 
@@ -104,7 +110,7 @@ class component_col extends component {
              <div class="zhs-menu--items" style="margin-top:${this.state.margin}px">
              ${Object.values(this.getProps().val)?.filter((c) => c.display).reduce((acc, item, i) => acc +
             `
-                                 <div onmousemove="_store.lvl.next({title:'${item.title}', lvl:${this.index}, i:${i}})" class="zhs-menu--items--item">
+                                 <div onclick="_store.cSection.next(${item['id']})" onmousemove="_store.lvl.next({title:'${item.title}', lvl:${this.index}, i:${i}})" class="zhs-menu--items--item">
                     <span>
                         ${item.title} ${item.next} 
                     </span>

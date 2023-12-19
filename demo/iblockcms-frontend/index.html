@@ -67,10 +67,24 @@
             state = {
                 data: {},
                 page: 1,
+                tree: [],
+                cSection: 1
             };
             init() {
-                Api.getCatalog(1, this.state.page).then((data) => {
-                    _store.catalog.next(data.data)
+                Api.getCatalog(1, 1).then((data) => {
+                    let t = data.data.tree
+
+                    let dfs = (node) => {
+                        for (let key in node) {
+                            if (node[key]['key']) {
+                                this.state.tree[key] = node[key];
+                                dfs(node[key]);
+                            }
+                        }
+                    }
+                    dfs(t[1])
+                    this.state.tree[1] = t[1];
+                    console.log(this.state.tree)
                 });
                 _store.catalog.subscribe((data) => {
                     this.state.data = data;
@@ -78,17 +92,29 @@
                         Render.renderDom();
                     }, 0)
                 })
+
+                _store.cSection.subscribe((id) => {
+                    this.state.cSection = id;
+                    this.fetch();
+                });
+                this.fetch();
+            }
+            fetch() {
+                Api.getCatalog(this.state.cSection, this.state.page).then((data) => {
+                    _store.catalog.next(data.data)
+                });
+
             }
             setPageNext() {
                 this.state.page++;
-                Api.getCatalog(1, this.state.page).then((data) => {
+                Api.getCatalog(this.state.cSection, this.state.page).then((data) => {
                     _store.catalog.next(data.data)
                 });
             }
 
             setPagePrev() {
                 this.state.page--;
-                Api.getCatalog(1, this.state.page).then((data) => {
+                Api.getCatalog(this.state.cSection, this.state.page).then((data) => {
                     _store.catalog.next(data.data)
                 });
             }
@@ -110,7 +136,15 @@
 
                 </ul>
         </header>
-                <div>
+
+                <div class="row my-2">
+                    <div class="col-12">
+                    ${this.state?.tree?.[this.state.cSection]?.['path'].reduce((acc, item, i) => {
+                    return acc + ((i == 0) ? '' : '<span> / </span>') + `<span>${this.state?.tree[item]['key']}</span>`
+                }, '')}
+                    </div>
+                    </div>
+                <div class="row">
                     <catalog>
                 </div>
                 <div>
