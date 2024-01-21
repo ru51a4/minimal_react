@@ -273,7 +273,15 @@ class _template {
                     }
                 }
                 let attr;
-                if (bind?.includes(".")) {
+                let _attr = [];
+                if (bind?.split(";").length > 1) {
+                    _attr = bind.split(";").map((c) => {
+                        if (c.split(".").length > 1) {
+                            return { attr: c.split(".")[0], val: getVal(c.split(".")[1]) }
+                        }
+                        return { val: c }
+                    })
+                } else if (bind?.includes(".")) {
                     attr = bind.split(".")[0];
                     bind = bind.split(".")[1];
                 }
@@ -300,6 +308,13 @@ class _template {
                 }
                 html += '<' + node.tag + ((node.attr.length > 1) ? ' ' : '') + `${node.attr.reduce((acc, item, i) => acc + ((item.key !== 'tag') ? `${item.key}="${item.value.join(" ")}"${((node.attr.length - 1 != i + 1) ? ' ' : '')}` : ''), '')}` + ((type_if) ? ` r-key="${if_key}" r-if="${if_val}" ` : '') + ((key) ? ` r-repeat="${key}" r-index="${i}"` : '') +
                     ((attr) ? `${attr}="${getVal(bind)}"` : '') +
+                    ((_attr.length) ? _attr.map((c) => {
+                        if (c?.attr) {
+                            return ` ${c.attr}="${c.val}" `
+                        } else {
+                            bind = c.val;
+                        }
+                    }).filter((c) => c).join(" ") : '') +
                     ((r_click) ? r_click : '') +
                     ((r_change) ? r_change : '') +
                     ((r_mouse) ? r_mouse : '') + ">"
