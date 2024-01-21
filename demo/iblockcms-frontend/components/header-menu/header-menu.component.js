@@ -1,13 +1,13 @@
+var _menu;
 class component_menu extends component {
     state = {
-        menu: null
+        menu: null,
+        res: []
     };
     body() {
         return `
                 <div class="zhs-menu" style="position:absolute; z-index:999999;">
-                        ${this.state?.res?.reduce((acc, item, i) => acc +
-            `<col r-repeat="res" r-index="${i}">
-                        ` + "\n", '')}
+                        <col r-for="res">
                 </div>
                 `;
     }
@@ -89,33 +89,48 @@ class component_menu extends component {
                 }
             }
             this.state.res = res
+            _menu = res;
             Render.renderDom();
         })
     }
 }
 
 class component_col extends component {
-    state = {};
+    state = {
+        items: () => {
+            return Object.values(this.getProps().val)?.filter((c) => c.display);
+        },
+        marginTop: () => {
+            return `margin-top:${this.state.margin}px`;
+        }
+    };
     destroy() {
         console.log(this.name)
     }
     init() {
         _store.lvl.subscribe(() => {
             let lvl = Number(this.index);
-            this.state.margin = _store.clvls.getValue().filter(c => c.lvl <= Number(lvl - 1)).reduce((acc, item) => acc + item.i * 52, 0);
+            console.log(_menu)
+            this.state.margin = _store.clvls.getValue().filter(c => c.lvl <= Number(lvl - 1)).reduce((acc, item) => acc + _menu[item.lvl].val.filter((c) => c.display).map((c) => c.title).indexOf(item.title) * 52, 0);
         })
+    }
+    click(id) {
+        _store.cSection.next(id);
+    }
+    mouse(title) {
+        console.log({ title })
+        _store.lvl.next({ title: title, lvl: this.index });
     }
     body() {
         return `
-             <div class="zhs-menu--items" style="margin-top:${this.state.margin}px">
-             ${Object.values(this.getProps().val)?.filter((c) => c.display).reduce((acc, item, i) => acc +
-            `
-                                 <div onclick="_store.cSection.next(${item['id']})" onmousemove="_store.lvl.next({title:'${item.title}', lvl:${this.index}, i:${i}})" class="zhs-menu--items--item">
-                    <span>
-                        ${item.title} ${item.next} 
+
+             <div class="zhs-menu--items" r-bind="style.marginTop">
+             <div r-for="items" r-click="click.id" r-mouse="mouse.title" class="zhs-menu--items--item">
+                    <span r-bind="title">
+                    </span>
+                    <span r-if="next" r-bind="next">
                     </span>
                 </div>
-                 ` + "\n", '')}
                 </div>                
 
             `;

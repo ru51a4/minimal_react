@@ -4,8 +4,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-    <script src="../../dist/mreact.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/gh/ru51a4/minimal_react/dist/mreact.js"></script>
 
 </head>
 <style>
@@ -56,10 +56,6 @@
                 <div class="main">
                     <todo></todo>
                 </div>
-                <hr>
-                <div class="d-flex justify-content-center">
-                    <a href="/demo/iblockcms-frontend/">ajax-catalog</a>
-                </div>
             </div>
         </div>
     </div>
@@ -78,21 +74,25 @@
     }
     class component_li extends component {
         state = {
+            complete: () => { return this.getProps()?.complete }
         };
         body() {
-            return `<li class="${(this.getProps()?.complete) ? 'complete' : ''}">
-                            <span>${this.getProps()?.title}</span>
-                            <div>
-                            <button class="btn btn-primary" onclick="runParentEvent('${this.name}', 'complete', '${this.getProps()?.title}')">
-                            <span r-if="${!this.getProps()?.complete}">готово</span>
-                            <span r-if="${this.getProps()?.complete}">отмена</span>
-                            </button> 
+            return `
+            <li class="${(this.getProps()?.complete) ? 'complete' : ''}">
+                <span>${this.getProps()?.title}</span>
+                <div>
+                    <button class="btn btn-primary"
+                        onclick="runParentEvent('${this.name}', 'complete', '${this.getProps()?.title}')">
+                        <span r-if="!complete">готово</span>
+                        <span r-if="complete">отмена</span>
+                    </button>
 
-                            <button class="btn mx-1 btn-danger" onclick="runParentEvent('${this.name}', 'del', '${this.getProps()?.title}')">
-                            <span>x</span>
-                            </button>
-                            </div>
-                            </li>`;
+                    <button class="btn mx-1 btn-danger"
+                        onclick="runParentEvent('${this.name}', 'del', '${this.getProps()?.title}')">
+                        <span>x</span>
+                    </button>
+                </div>
+            </li>`;
         }
         destroy() {
             console.log('destroy', this.name)
@@ -104,7 +104,6 @@
     class component_todo extends component {
         state = {
             serf: false,
-            rif: true,
             current: '',
             todos: [
                 { complete: false, title: 'помыть посуду' },
@@ -115,33 +114,26 @@
 
         body() {
             return `
-
-             <div class="asda">
-             <div class="asd">
-               
-                <button class="btn btn-primary" onclick="runEvent('${this.name}', 'serf')">
-                    <span r-key="serf" r-if="${this.state.serf}">ладно поняль(</span>
-                    <span r-key="serf" r-if="${!this.state.serf}">целый день играть в сабвей серфер</span>
-                </button>
-                <div class="d-flex jusitfy-content-center flex-column" r-key="serf" r-if="${!this.state.serf}">
-                    <div>список дел на сегодня:</div>
-                    <ul>
-                        ${this.state.todos.reduce((acc, item, i) => acc +
-                `       <my-li r-repeat="todos" r-index="${i}">
-                        ` + "\n", '')}
-                        ${this.state.todos.length == 0 ? '<my-li r-index="0" r-type="destroy" r-repeat="todos">' : ''}
-                    </ul> 
-                    <input class="form-control" type="text" onchange="model('${this.name}', {event: event, key: 'current'})">
-                    </input>
-                    <button class="mt-2 btn btn-primary" onclick="runEvent('${this.name}', 'add')">добавить</button>
+            <div class="asda">
+                <div class="asd">
+                    <div r-if="serf">получишь по жопе
+                    </div>
+                    
+                    <button class="btn btn-primary" r-click="serf">
+                        <span r-if="serf">ладно поняль(</span>
+                        <span r-if="!serf">целый день играть в сабвей серфер</span>
+                    </button>
+                    <div class="d-flex jusitfy-content-center flex-column" r-if="!serf">
+                        <div>список дел на сегодня:</div>
+                        <ul>
+                            <my-li r-for="todos">
+                        </ul>
+                        <input class="form-control" type="text" onchange="model('${this.name}', {event: event, key: 'current'})">
+                        </input>
+                        <button class="mt-2 btn btn-primary" r-click="add">добавить</button>
+                    </div>
                 </div>
-                 <div r-key="serf" r-if="${this.state.serf}">
-                    <kek> 
-                </div>
-            </div>
-
-            </div>
-        `
+            </div>        `
         };
 
         add() {

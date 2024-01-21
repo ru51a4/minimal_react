@@ -4,32 +4,32 @@ class component_catalog extends component {
     };
     init() {
         _store.catalog.subscribe((data) => {
-            this.state.els = data?.els;
+            this.state.els = data?.els.map((c) => {
+                return {
+                    ...c, img: `http://iblock.1123875-cc97019.tw1.ru` + c.prop["DETAIL_PICTURE"], prop:
+                        Object.keys(c.prop)?.map((key) => {
+                            return (key !== 'DETAIL_PICTURE' && key !== 'photo') ? `<li>${key} - ${c.prop[key]}</li>` : ""
+                        }).join("")
+                }
+            });
         });
     }
     body() {
         return `
-                <ul>
-                ${this.state?.els?.reduce((acc, item, i) => acc +
-            `
-                                <li class="card mb-4 d-flex justify-content-center">
-                                    <div class="p-2">
-                                        <span
-                                            >${item.name}</span>
-                                        <p>
-                                            <img style="width:100px" src="http://iblock.1123875-cc97019.tw1.ru${item.prop['DETAIL_PICTURE']}">
-                                            </img>
-                                        </p>
-                                        <ul>
-                                        ${Object.keys(item?.prop)?.map((key) => {
-                return (key !== 'DETAIL_PICTURE' && key !== 'photo') ? `<li>${key} - ${item?.prop[key]}</li>` : ""
-            }).join("")}
-                                        </ul>
-                                    </div>
-                                </li>
-                    ` + "\n", '')}
-                        
-                </ul>
+               <ul>
+                <li r-for="els" class="card mb-4 d-flex justify-content-center">
+                    <div class="p-2">
+                        <span r-bind="name"></span>
+                        <p>
+                            <img style="width:100px" r-bind="src.img">
+                            </img>
+                        </p>
+                        <ul>
+                            <div r-bind="prop"></div>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
             `;
     }
 }

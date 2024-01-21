@@ -5,6 +5,7 @@ const jsBundle = () =>
     src([
         'lib/superxmlparser74.js',
         'lib/dombuilder.js',
+        'lib/template.js',
         'lib/render.js',
     ])
         .pipe(concat('mreact.js'))

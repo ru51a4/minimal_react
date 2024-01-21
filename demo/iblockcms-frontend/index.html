@@ -1,4 +1,5 @@
 <html>
+<!-- todo: to template -->
 
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -12,6 +13,7 @@
     <script src="store.js"></script>
     <script src="api.js"></script>
     <script src="./components/header-menu/header-menu.component.js"></script>
+
     <script src="./components/catalog/catalog.component.js"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -66,7 +68,21 @@
                 data: {},
                 page: 1,
                 tree: [],
-                cSection: 1
+                cSection: 1,
+                breadcrumb: () => {
+                    return this.state?.tree?.[this.state.cSection]?.['path'].reduce((acc, item, i) => {
+                        return acc + ((i == 0) ? '' : '<span> / </span>') + `<span>${this.state?.tree[item]['key']}</span>`
+                    }, '')
+                },
+                total: () => {
+                    return this.state.data?.count;
+                },
+                pageStart: () => {
+                    return this.state?.page - 1 >= 1;
+                },
+                pageEnd: () => {
+                    return ((this.state?.page + 1) <= Math.ceil(this.state.data?.count / 5));
+                }
             };
             init() {
                 Api.getCatalog(1, 1).then((data) => {
@@ -120,63 +136,57 @@
             body() {
                 return `
                 <div>
-                  <header class="d-flex flex-wrap justify-content-start py-3 mb-4 border-bottom">
-            <a href="/demo/iblockcms-frontend/" class="d-inline-flex align-items-center mb-3 mb-md-0 text-dark text-decoration-none">
-               
-                <span class="fs-4">IBLOCKCMS</span>
-            </a>
+                    <div>
+                        <div class="d-flex flex-wrap justify-content-start py-3 mb-4 border-bottom">
+                            <a href="/demo/iblockcms-frontend/"
+                                class="d-inline-flex align-items-center mb-3 mb-md-0 text-dark text-decoration-none">
 
-            <ul class="nav nav-pills">
-                <li class="nav-item zhs-menu-event"><a href="#" class="nav-link">Каталог</a>
-                    <div class="zhs">
-                        <menu></menu>
-                    </div>
-                </li>
+                                <span class="fs-4">IBLOCKCMS</span>
+                            </a>
 
-                </ul>
-        </header>
-
-                <div class="row my-2">
-                    <div class="col-12">
-                    ${this.state?.tree?.[this.state.cSection]?.['path'].reduce((acc, item, i) => {
-                    return acc + ((i == 0) ? '' : '<span> / </span>') + `<span>${this.state?.tree[item]['key']}</span>`
-                }, '')}
-                    </div>
-                    </div>
-                <div class="row">
-                    <catalog>
-                </div>
-                <div>
-                    <div class="d-flex flex-column">
-                        <div style="margin-left: auto;" class="mb-4 pagination">
-                            total - ${this.state.data?.count}
+                            <ul class="nav nav-pills">
+                                <li class="nav-item zhs-menu-event"><a href="#" class="nav-link">Каталог</a>
+                                    <div class="zhs">
+                                        <menu>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
-                        <div style="margin-left: auto;" class="pagination">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination">
-                                    ${(this.state?.page - 1 >= 1)
-                        ? `
-                                    <li class="page-item"><span style="cursor:pointer;" onclick="runEvent('${this.name}', 'setPagePrev')" class="page-link"><span>prev</span></span>
+                        </div>
+
+                        <div class="row my-2">
+                            <div r-bind="breadcrumb" class="col-12">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <catalog>
+                        </div>
+                        <div>
+                            <div class="d-flex flex-column">
+                                <div style="margin-left: auto;" class="mb-4 pagination">
+                                    total - <span r-bind="total"></span>
+                                </div>
+                                <div style="margin-left: auto;" class="pagination">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination">
+                                            <li r-if="pageStart" class="page-item"><span style="cursor:pointer;" r-click="setPagePrev" class="page-link"><span>prev</span></span>
                                             </li>
-                                    ` : ''
-                    }
-                                    <li class="page-item page-link active"><span>${this.state?.page}</span></li>
-                               ${(this.state?.page + 1 <= Math.ceil(this.state.data?.count / 5))
-                        ? `
-                                    <li class="page-item"><span style="cursor:pointer;" onclick="runEvent('${this.name}', 'setPageNext')" class="page-link"
-                                                    ><span>next</span></span>
+
+                                            <li class="page-item page-link active"><span r-bind="page"></span></li>
+                                            <li r-if="pageEnd" class="page-item"><span style="cursor:pointer;" r-click="setPageNext" class="page-link"><span>next</span></span>
                                             </li>
-                                    ` : ''
-                    }
-                                </ul>
-                            </nav>
+
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    </div>
-                    </div>
-                     <footer class="pt-3 text-muted border-top">
+                    <footer class="pt-3 text-muted border-top">
                         https to http plz
-                    </footer>
+                    </footer>           
+                    </div>     
                 `;
             }
         }
@@ -187,6 +197,10 @@
                 component: component_main
             },
             {
+                name: 'catalog',
+                component: component_catalog
+            },
+            {
                 name: 'menu',
                 component: component_menu
             },
@@ -194,10 +208,6 @@
                 name: 'col',
                 component: component_col
             },
-            {
-                name: 'catalog',
-                component: component_catalog
-            }
         ];
 
         Render = new render(components);

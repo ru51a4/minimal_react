@@ -1,3 +1,401 @@
+class superxmlparser74 {
+    static parse(str, cbOpenTag, cbInnerText, cbClosedTag, cbSelfOpenTag = () => {
+    }) {
+        let isOpen = false;
+        let startAttr = false;
+        let t = ''
+        let tAttrKey = '';
+        let tAttrValue = '';
+        let tAttrStart = false;
+        let tAttr = '';
+        let attr = [];
+        let prevCh = '';
+        for (let i = 0; i <= str.length - 1; i++) {
+            //(1)<li (2)class="breadcrumb-item-selected text-gray-light breadcrumb-item text-mono h5-mktg" aria-current="GitHub Student Developer Pack"(3)>GitHub Student Developer Pack(4)</li(5)>
+            //<selfclosing />
+            //comments // <!-- -->
+            if (str[i] === "<") { //1
+                //comments <!-- -->
+                if (str[i + 1] === '!' && str[i + 2] === "-" && str[i + 3] === "-") {
+                    for (let j = i + 4; j <= str.length - 1; j++) {
+                        if (str[j] === '-' && str[j + 1] === '-' && str[j + 2] === '>') {
+                            i = j + 2;
+                            break;
+                        }
+                    }
+                    continue
+                }
+                ///
+
+                if (t.trim() !== '' && t.trim() !== "\n" && t.trim() !== "\t") {
+                    //cut innerTEXT 4
+                    cbInnerText({
+                        value: t
+                    });
+                    t = '';
+                } else if (str[i + 1] !== "/") {
+                    cbInnerText({
+                        value: ""
+                    });
+                }
+                //open tag
+                isOpen = true;
+                if (str[i + 1] === "/") {
+                    isOpen = false;
+                    i = i + 1;
+                    continue;
+                }
+            } else if (str[i] === '>') {
+                ///closed tag - build 3/5
+                if (isOpen) {
+                    if (prevCh === "/") {
+                        cbSelfOpenTag({
+                            tag: t,
+                            attr: attr
+                        })
+                    } else {
+                        cbOpenTag({
+                            tag: t,
+                            attr: attr,
+                        })
+                    }
+                } else {
+                    cbClosedTag({})
+                }
+                attr = [];
+                t = '';
+                startAttr = false;
+                isOpen = false;
+            } else {
+                //accum str
+                if ((!startAttr && str[i] !== ' ') || !isOpen) {
+                    t += str[i];
+                } else if (startAttr) { //get attr 2
+                    if (str[i] === '=') {
+                        tAttrKey = tAttr
+                        tAttr = '';
+                    } else if (str[i] === '"') {
+                        tAttrStart = !tAttrStart;
+                        if (tAttrStart === false) {
+                            if (tAttrKey === 'class') {
+                                tAttrValue = tAttr.split(" ");
+                            } else {
+                                tAttrValue = [tAttr];
+                            }
+                            tAttr = '';
+                            attr.push({ key: tAttrKey, value: tAttrValue });
+                            if (str[i + 1] === ' ') {
+                                i = i + 1;
+                                continue;
+                            }
+                        }
+                    } else {
+                        tAttr += str[i];
+                    }
+
+                } else if (str[i] === ' ' && isOpen) {
+                    startAttr = true;
+                }
+
+            }
+            prevCh = str[i];
+        }
+    }
+}
+
+class node {
+    id;
+    childrens = [];
+    innerTEXT = '';
+    parent = [];
+    numChild = 0;
+    tag;
+    closedtag;
+    visible = true;
+    rIf = false;
+    attr = [];
+    parentComponent = '';
+    left;
+    right;
+    rName;
+}
+
+class BuilderDOM {
+    build(str) {
+        //todo
+        let strFix = "<dom>";
+        strFix += str;
+        strFix += "\n </dom>";
+        return this._html_to_dom(strFix)
+    }
+
+    _html_to_dom(str) {
+        let res = [];
+        let parentStack = [];
+        let counter = 0;
+        let map = [];
+        let cmap = [];
+        let p = [];
+        let component = '';
+        let cStack = [];
+        superxmlparser74.parse(str,
+            (item) => {
+                //opentag
+                let lvl_key = JSON.stringify([p]);
+                let remove = item.attr.find(c => c['key'] == "r-if")?.value[0] === 'false';
+                let _key = '';
+                let cName = item.attr.find(c => c['key'] == "r-name")?.value[0];
+                if (cName) {
+                    component = item.attr.find(c => c['key'] == "r-name")?.value[0];
+                    cStack.push({ type: 'component', component });
+                } else {
+                    cStack.push({ type: 'div', component: null, remove });
+                }
+                if (remove) {
+                    _key = undefined
+                }
+                else if (cName) {
+                    _key = cName + '#component';
+                }
+                else {
+                    if (map[lvl_key] == undefined) {
+                        map[lvl_key] = 0;
+                    } else {
+                        map[lvl_key]++;
+                    }
+                    _key = `_${p.join("-")}#${map[lvl_key]}`;
+                }
+
+                //
+                let el = new node();
+                el.attr = item.attr;
+                el.tag = item.tag.trim();
+                el.numChild = map[lvl_key];
+                el.parent = JSON.parse(JSON.stringify(p));
+                el.parentNode = parentStack[parentStack.length - 1];
+                el.id = _key;
+                if (!item.attr.find(c => c['key'] == "r-name")?.value[0] && !remove) {
+                    p.push(map[lvl_key]);
+                }
+                el.parentComponent = cStack.filter((c) => c.type === 'component')[cStack.filter((c) => c.type === 'component').length - 1]?.component;
+                el.left = counter++;
+                el.rName = item.attr.find(c => c['key'] == "r-name")?.value[0];
+                res.push(el);
+                el.attr.push({
+                    key: 'tag',
+                    value: [item.tag]
+                })
+                if (parentStack[parentStack.length - 1] && el.tag !== 'script') {
+                    parentStack[parentStack.length - 1].childrens.push(el)
+                }
+                parentStack.push(el);
+
+            },
+            (item) => {
+                //innertext
+                if (parentStack[parentStack.length - 1]) {
+                    parentStack[parentStack.length - 1].innerTEXT += item.value;
+                }
+            },
+            (item) => {
+                if (!parentStack.length) {
+                    return
+                }
+                parentStack[parentStack.length - 1].right = counter++
+                let isComponent = cStack.pop();
+                //closedtag
+                parentStack.pop();
+                if (!isComponent.remove && isComponent.type !== 'component') {
+                    p.pop();
+                }
+            });
+        return res;
+
+
+    }
+}
+class dom_node {
+    childrens = [];
+    innerTEXT = '';
+    tag;
+}
+
+class _template {
+    static render = (str, component) => {
+        let dom = _template.html_to_dom(str);
+        let html = '';
+        let stack = [component.state];
+        let getVal = (key) => {
+            for (let i = stack.length - 1; i >= 0; i--) {
+                let val = stack[i]?.[key]
+                if (val !== undefined) {
+                    if (typeof val === 'function') {
+                        return val();
+                    }
+                    return val;
+                }
+            }
+        }
+        let sumHtml = (node, key = null, i = null, value, _for = false) => {
+            node.tag = node.tag.trim();
+
+            let type_for = node?.attr?.find((c) => c['key'] === 'r-for')?.value[0];
+            let type_if = node?.attr?.find((c) => c['key'] === 'r-if')?.value[0];
+            let bind = node?.attr?.find((c) => c['key'] === 'r-bind')?.value[0];
+            let r_click = node?.attr?.find((c) => c['key'] === 'r-click')?.value[0];;
+            let r_mouse = node?.attr?.find((c) => c['key'] === 'r-mouse')?.value[0];;
+            let r_change = node?.attr?.find((c) => c['key'] === 'r_change')?.value[0];;
+
+            if (type_for && !key) {
+                let val = getVal(type_for)
+                if (!val?.length) {
+                    html += "\n" + `<${node.tag} r-index="0" r-type="destroy" r-repeat="${type_for}"> </${node.tag}>`
+                }
+                for (let j = 0; j <= val?.length - 1; j++) {
+                    value = val?.[j]
+                    stack.push(JSON.parse(JSON.stringify(value)));
+                    sumHtml(node, type_for, j, value, true);
+                    stack.pop();
+
+                }
+            } else {
+                let if_key
+                let if_val
+                if (type_if) {
+                    node.attr = node?.attr?.filter((c) => c['key'] !== 'r-if');
+                    if (type_if.split("")[0] === '!') {
+                        if_key = type_if.split("").filter((c, i) => i !== 0).join("");
+                        if_val = !Boolean(getVal(if_key))
+
+                    } else {
+                        if_key = type_if;
+                        if_val = Boolean(getVal(if_key))
+                    }
+                }
+                let attr;
+                if (bind?.includes(".")) {
+                    attr = bind.split(".")[0];
+                    bind = bind.split(".")[1];
+                }
+                if (r_click) {
+                    if (r_click.includes(".")) {
+                        r_click = ` onclick="runEvent('${component.name}', '${r_click.split(".")[0]}', '${getVal(r_click.split(".")[1])}') "`
+                    } else {
+                        r_click = ` onclick="runEvent('${component.name}', '${r_click}') "`
+                    }
+                }
+                if (r_mouse) {
+                    if (r_mouse.includes(".")) {
+                        r_mouse = ` onmousemove="runEvent('${component.name}', '${r_mouse.split(".")[0]}', '${getVal(r_mouse.split(".")[1])}') "`
+                    } else {
+                        r_mouse = ` onmousemove="runEvent('${component.name}', '${r_mouse}') "`
+                    }
+                }
+                if (r_change) {
+                    if (r_change.includes(".")) {
+                        r_change = ` onmousemove="runEvent('${component.name}', '${r_change.split(".")[0]}', '${getVal(r_change.split(".")[1])}') "`
+                    } else {
+                        r_change = ` onmousemove="runEvent('${component.name}', '${r_change}') "`
+                    }
+                }
+                html += '<' + node.tag + ((node.attr.length > 1) ? ' ' : '') + `${node.attr.reduce((acc, item, i) => acc + ((item.key !== 'tag') ? `${item.key}="${item.value.join(" ")}"${((node.attr.length - 1 != i + 1) ? ' ' : '')}` : ''), '')}` + ((type_if) ? ` r-key="${if_key}" r-if="${if_val}" ` : '') + ((key) ? ` r-repeat="${key}" r-index="${i}"` : '') +
+                    ((attr) ? `${attr}="${getVal(bind)}"` : '') +
+                    ((r_click) ? r_click : '') +
+                    ((r_change) ? r_change : '') +
+                    ((r_mouse) ? r_mouse : '') + ">"
+                html += "\n"
+                html += node.innerTEXT ?? '';
+                html += "\n"
+                if (bind && !attr) {
+                    html += getVal(bind);
+                    html += "\n"
+                }
+                node.childrens.forEach((node) => {
+                    sumHtml(node, null, null, value);
+                });
+                if (!components.map(item => item.name).includes(node.tag)) {
+                    html += '</' + node.tag + '>';
+                    html += "\n"
+                }
+            }
+        }
+        sumHtml(dom[0], null, null, component.state);
+        return html;
+    }
+    static html_to_dom = (str) => {
+        var utils = {
+            noEndTag(tag) {
+                let noEndTags = [
+                    'noscript',
+                    'link',
+                    'base',
+                    'meta',
+                    'input',
+                    'svg',
+                    'path',
+                    'img',
+                    'br',
+                    'area',
+                    'base',
+                    'br',
+                    'col',
+                    'embed',
+                    'hr',
+                    'img',
+                    'input',
+                    'keygen',
+                    'link',
+                    'meta',
+                    'param',
+                    'source',
+                    'track',
+                    'wbr'
+                ];
+                return noEndTags.includes(tag);
+            }
+        };
+
+        let res = [];
+        let parentStack = [];
+        superxmlparser74.parse(str,
+            (item) => {
+                //opentag
+                if (item.tag === 'p' && parentStack[parentStack.length - 1]?.tag === 'p') {
+                    parentStack.pop();
+                }
+                //
+                let el = new dom_node();
+                el.attr = item.attr;
+                el.tag = item.tag;
+                res.push(el);
+                el.attr.push({
+                    key: 'tag',
+                    value: [item.tag]
+                })
+                if (parentStack[parentStack.length - 1] && el.tag !== 'script') {
+                    parentStack[parentStack.length - 1].childrens.push(el)
+                }
+                if (!utils.noEndTag(el.tag)) {
+                    parentStack.push(el);
+                }
+            },
+            (item) => {
+                //innertext
+                if (parentStack[parentStack.length - 1]) {
+                    parentStack[parentStack.length - 1].innerTEXT += item.value;
+                }
+            },
+            (item) => {
+                //closedtag
+                parentStack.pop();
+            });
+
+        return res;
+    }
+}
+
+
+
 
 var domBuilder = new BuilderDOM();
 
