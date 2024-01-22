@@ -6,7 +6,8 @@ const jsBundle = () =>
         'lib/superxmlparser74.js',
         'lib/dombuilder.js',
         'lib/template.js',
-        'lib/render.js',
+        'lib/dependency/page.js',
+        'lib/render.js'
     ])
         .pipe(concat('mreact.js'))
         .pipe(dest('dist'));

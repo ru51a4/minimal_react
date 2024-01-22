@@ -1,0 +1,73 @@
+<html>
+<script src="./../../dist/mreact.js"></script>
+
+<body>
+    <div class="main">
+    </div>
+</body>
+<script>
+    class component_hello extends component {
+        state = {
+            variable: "hello",
+            color: "red",
+            cssColor: () => {
+                return 'color:' + this.state.color + ';'
+            }
+        };
+        body() {
+            return '<div> <span r-bind="variable"></span> <span r-bind="style.cssColor">world</span> <a r-click="toAbout" href="#">about</a></div> ';
+        }
+        toAbout() {
+            page("/about")
+        }
+        init() {
+            console.log('init')
+        }
+    }
+
+    class component_about extends component {
+        state = {
+        };
+        body() {
+            return '<div><a r-click="toHello" href="#">hello</a> <p> (c) ru51a4 2024 </p></div> ';
+        }
+        toHello() {
+            page("/")
+        }
+    }
+
+    var components = [
+        {
+            name: 'hello',
+            component: component_hello,
+        },
+        {
+            name: 'about',
+            component: component_about
+        }
+    ];
+
+    Render = new render(components);
+
+    function main() {
+
+        let routing = {
+            "main": '<hello>',
+            'about': '<about>'
+        }
+        page('/', function () {
+            _currentDom = routing['main'].split("\n");
+            Render.renderDom();
+        });
+        page('/about', function () {
+            _currentDom = routing['about'].split("\n");
+            Render.renderDom();
+        });
+        _currentDom = routing['main'].split("\n");
+
+        Render.renderDom();
+    }
+    main();
+</script>
+
+</html>
