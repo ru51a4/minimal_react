@@ -124,7 +124,7 @@ class component_col extends component {
     body() {
         return `
 
-             <div class="zhs-menu--items" r-bind="style.marginTop">
+             <div class="zhs-menu--items" r-bind.style="marginTop">
              <div r-for="items" r-click="click.id" r-mouse="mouse.title" class="zhs-menu--items--item">
                     <span r-bind="title">
                     </span>

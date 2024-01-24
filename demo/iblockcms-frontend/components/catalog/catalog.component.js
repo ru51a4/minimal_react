@@ -21,7 +21,7 @@ class component_catalog extends component {
                     <div class="p-2">
                         <span r-bind="name"></span>
                         <p>
-                            <img style="width:100px" r-bind="src.img">
+                            <img style="width:100px" r-bind.src="img">
                             </img>
                         </p>
                         <ul>
