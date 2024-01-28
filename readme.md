@@ -1,4 +1,4 @@
-http://tightfisted-store-kek.surge.sh  
+http://minimal-react-landing.1123875-cc97019.tw1.ru/  
 
 1)directives  
 ```
