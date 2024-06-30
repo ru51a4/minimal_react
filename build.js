@@ -3,11 +3,11 @@ const concat = require('gulp-concat');
 
 const jsBundle = () =>
     src([
-        'lib/superxmlparser74.js',
-        'lib/dombuilder.js',
-        'lib/template.js',
-        'lib/dependency/page.js',
-        'lib/render.js'
+        'src/superxmlparser74.js',
+        'src/dombuilder.js',
+        'src/template.js',
+        'src/dependency/page.js',
+        'src/render.js'
     ])
         .pipe(concat('mreact.js'))
         .pipe(dest('dist'));
