@@ -5,7 +5,7 @@
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="dist/mreact.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ru51a4/minimal_react/dist/mreact.js"></script>
     <!-- and it's easy to individually load additional languages -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
     <meta charset="utf-8">
@@ -24,6 +24,23 @@
             </a>
         </header>
 
+    </div>
+    <div class="mt-5 row d-flex justify-content-center">
+
+
+
+
+
+        <h2>online demo:</h2>
+        <ul>
+            <li>
+                <a href="/demo/todo/">todo app</a>
+            </li>
+            <li>
+                <a href="/demo/iblockcms-frontend/">ajax-catalog</a>
+            </li>
+        </ul>
+        <br>
     </div>
     <div class="container d-flex flex-column align-items-center">
         <div class="row d-flex flex-column align-items-center">
@@ -47,17 +64,17 @@ class component_todo extends component {
     };
     body() {
         return `
-            < div class="">
-                < ul>
-                    < li r-for="todos">
-                    < span r-bind="title">< /span>
-                    < /li>
-                < /uL>
-                < span r-bind="counter">< /span>
-                < button class="btn-primary" r-click="increment">
+            &lt;div class="">
+                &lt;ul>
+                    &lt;li r-for="todos">
+                    &lt;span r-bind="title">&lt;/span>
+                    &lt;/li>
+                &lt;/uL>
+                &lt;span r-bind="counter">&lt;/span>
+                &lt;button class="btn-primary" r-click="increment">
                     +
-                < /button>
-            < /div>
+                &lt;/button>
+            &lt;/div>
         `;
        }
     increment(){
@@ -126,23 +143,7 @@ class component_todo extends component {
             </div>
         </div>
 
-        <div class="mt-5 row d-flex justify-content-center">
 
-
-
-
-
-            <h2>online demo:</h2>
-            <ul>
-                <li>
-                    <a href="/demo/todo/">todo app</a>
-                </li>
-                <li>
-                    <a href="/demo/iblockcms-frontend/">ajax-catalog</a>
-                </li>
-            </ul>
-            <br>
-        </div>
     </div>
 </body>
 <script>
@@ -168,7 +169,7 @@ class component_todo extends component {
                 </ul> 
                 <div>
                <span r-bind="counter"></span>
-               <button class="btn-primary" r-click="increment">+</button>
+               <button class="btn btn-primary" r-click="increment">+</button>
                     </div>
                </div>
             </div>
