@@ -1,4 +1,4 @@
-http://minimal-react-landing.1123875-cc97019.tw1.ru/  
+https://minimal-react-landing.netlify.app/
 
 1)directives  
 ```
