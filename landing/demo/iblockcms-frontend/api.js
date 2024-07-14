@@ -1,6 +1,6 @@
 
 class Api {
-    static apiUrl = "http://188.120.245.72:8082/api";
+    static apiUrl = "https://crossorigin.me/http://188.120.245.72:8082/api";
     static getCatalog = (sectionId, page) => {
         return axios.get(`${this.apiUrl}/index/${sectionId}/${page}`)
     }
