@@ -6,7 +6,7 @@ class component_catalog extends component {
         _store.catalog.subscribe((data) => {
             this.state.els = data?.els.map((c) => {
                 return {
-                    ...c, img: `http://iblock.1123875-cc97019.tw1.ru` + c.prop["DETAIL_PICTURE"], prop:
+                    ...c, img: `http://188.120.245.72:8082/` + c.prop["DETAIL_PICTURE"], prop:
                         Object.keys(c.prop)?.map((key) => {
                             return (key !== 'DETAIL_PICTURE' && key !== 'photo') ? `<li>${key} - ${c.prop[key]}</li>` : ""
                         }).join("")
