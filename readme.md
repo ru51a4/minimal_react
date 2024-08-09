@@ -7,6 +7,7 @@ r-for
 r-click  
 r-mouse  
 r-bind  
+r-bind.attr  
 ```
 2) life cycle (init/destroy)  
 3) store - global variable with rxjs  
