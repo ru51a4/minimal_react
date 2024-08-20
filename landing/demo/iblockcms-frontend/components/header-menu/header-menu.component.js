@@ -111,7 +111,7 @@ class component_col extends component {
         _store.lvl.subscribe(() => {
             let lvl = Number(this.index);
             console.log(_menu)
-            this.state.margin = _store.clvls.getValue().filter(c => c.lvl <= Number(lvl - 1)).reduce((acc, item) => acc + _menu[item.lvl].val.filter((c) => c.display).map((c) => c.title).indexOf(item.title) * 52, 0);
+            this.state.margin = _store.clvls.getValue().filter(c => c.lvl <= Number(lvl - 1)).reduce((acc, item) => acc + _menu[item.lvl].val.filter((c) => c.display).map((c) => c.title).indexOf(item.title) * 50, 0);
         })
     }
     click(id) {

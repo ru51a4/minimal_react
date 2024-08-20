@@ -6,7 +6,7 @@ r-if
 r-for  
 r-click  
 r-mouse  
-r-bind  
+r-bind
 r-bind.attr  
 ```
 2) life cycle (init/destroy)  
