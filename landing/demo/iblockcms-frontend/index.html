@@ -90,6 +90,9 @@
                 },
                 pageEnd: () => {
                     return ((this.state?.page + 1) <= Math.ceil(this.state.data?.count / 5));
+                },
+                init: () => {
+                    return this.state.tree.length ? '' : 'display:none;'
                 }
             };
             init() {
@@ -143,58 +146,60 @@
             }
             body() {
                 return `
+               <div>
+
+                <div r-bind.style="init">
+                    <div class="d-flex flex-wrap justify-content-start py-3 mb-4 border-bottom">
+                        <a href="/demo/iblockcms-frontend/"
+                            class="d-inline-flex align-items-center mb-3 mb-md-0 text-dark text-decoration-none">
+
+                            <span class="fs-4">IBLOCKCMS</span>
+                        </a>
+
+                        <ul class="nav nav-pills">
+                            <li class="nav-item zhs-menu-event"><a href="#" class="nav-link">Каталог</a>
+                                <div class="zhs">
+                                    <menu>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row my-2">
+                    <div r-bind="breadcrumb" class="col-12">
+
+                    </div>
+                </div>
+                <div class="row">
+                    <catalog>
+                </div>
                 <div>
-                    <div>
-                        <div class="d-flex flex-wrap justify-content-start py-3 mb-4 border-bottom">
-                            <a href="/demo/iblockcms-frontend/"
-                                class="d-inline-flex align-items-center mb-3 mb-md-0 text-dark text-decoration-none">
-
-                                <span class="fs-4">IBLOCKCMS</span>
-                            </a>
-
-                            <ul class="nav nav-pills">
-                                <li class="nav-item zhs-menu-event"><a href="#" class="nav-link">Каталог</a>
-                                    <div class="zhs">
-                                        <menu>
-                                    </div>
-                                </li>
-                            </ul>
+                    <div class="d-flex flex-column">
+                        <div style="margin-left: auto;" class="mb-4 pagination">
+                            <span>total -</span> <span r-bind="total"></span>
                         </div>
-                        </div>
+                        <div style="margin-left: auto;" class="pagination">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li r-if="pageStart" class="page-item"><span style="cursor:pointer;" r-click="setPagePrev"
+                                            class="page-link"><span>prev</span></span>
+                                    </li>
 
-                        <div class="row my-2">
-                            <div r-bind="breadcrumb" class="col-12">
+                                    <li class="page-item page-link active"><span r-bind="page"></span></li>
+                                    <li r-if="pageEnd" class="page-item"><span style="cursor:pointer;" r-click="setPageNext"
+                                            class="page-link"><span>next</span></span>
+                                    </li>
 
-                            </div>
-                        </div>
-                        <div class="row">
-                            <catalog>
-                        </div>
-                        <div>
-                            <div class="d-flex flex-column">
-                                <div style="margin-left: auto;" class="mb-4 pagination">
-                                    <span>total -</span> <span r-bind="total"></span>
-                                </div>
-                                <div style="margin-left: auto;" class="pagination">
-                                    <nav aria-label="Page navigation example">
-                                        <ul class="pagination">
-                                            <li r-if="pageStart" class="page-item"><span style="cursor:pointer;" r-click="setPagePrev" class="page-link"><span>prev</span></span>
-                                            </li>
-
-                                            <li class="page-item page-link active"><span r-bind="page"></span></li>
-                                            <li r-if="pageEnd" class="page-item"><span style="cursor:pointer;" r-click="setPageNext" class="page-link"><span>next</span></span>
-                                            </li>
-
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
+                                </ul>
+                            </nav>
                         </div>
                     </div>
-                    <footer class="pt-3 text-muted border-top">
-                        https to http plz
-                    </footer>           
-                    </div>     
+                </div>
+                <footer class="pt-3 text-muted border-top">
+                    https to http plz
+                </footer>
+            </div>
                 `;
             }
         }
