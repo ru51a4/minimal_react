@@ -252,7 +252,7 @@ class render {
 
                 let c1 = elVdom?.childrens?.length;
                 let c2 = prevElVdom?.childrens?.length;
-
+                let childs = [];
                 let c3 = (c1 > c2) ? c1 : c2;
                 for (let i = 0; i <= c3 - 1; i++) {
                     let cc1 = this.vdom.find((el) => el.id == elVdom?.childrens[i]?.id);
@@ -267,9 +267,12 @@ class render {
                         stackUpdateDom.push({ el: elVdom, prev: prevElVdom, type: "create" })
                         return;
                     } {
-                        deepReplace(cc1.id);
+                        childs.push(cc1.id);
                     }
                 }
+                childs.forEach((id) => {
+                    deepReplace(id);
+                })
 
             }
             deepReplace(this.vdom[0].id);
