@@ -35,7 +35,6 @@ class component {
 }
 
 var _currentDom = '';
-page.configure({ window: window })
 
 class render {
     init = true;
@@ -44,11 +43,9 @@ class render {
     hiddenEls = [];
     prevComponents = [];
 
-    constructor(_components) {
+    constructor(_el, _components) {
         components = _components;
-        if (_currentDom == '') {
-            _currentDom = document.querySelector('.main').innerHTML.trim().split("\n");
-        }
+        _currentDom = _el.innerHTML.trim().split("\n");
     }
 
     renderDom() {
