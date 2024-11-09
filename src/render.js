@@ -296,7 +296,7 @@ class render {
         } else {
             this.vdom = domBuilder.build(currentDom);
             sumHtml(this.vdom[0], true);
-            this.el.innerHTML = html;
+            this._el.innerHTML = html;
             this.init = false;
             this.prevVdom = this.vdom;
         }
