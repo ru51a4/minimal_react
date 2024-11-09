@@ -481,10 +481,11 @@ class render {
     prevVdom = [];
     hiddenEls = [];
     prevComponents = [];
-
+    _el = {};
     constructor(_el, _components) {
         components = _components;
-        _currentDom = _el.innerHTML.trim().split("\n");
+        this._el = _el;
+        _currentDom = this._el.innerHTML.trim().split("\n");
     }
 
     renderDom() {
@@ -662,7 +663,7 @@ class render {
         //todo dom
         if (!this.init) {
             let getDomEl = (virtualDomStack) => {
-                let currentDocumentDom = document.querySelector('.main');
+                let currentDocumentDom = this._el;
                 for (let i = 1; i <= virtualDomStack.length - 1; i++) {
                     let numChild;
                     if (Number(virtualDomStack[i]) === virtualDomStack[i]) {
@@ -734,7 +735,7 @@ class render {
         } else {
             this.vdom = domBuilder.build(currentDom);
             sumHtml(this.vdom[0], true);
-            document.querySelector('.main').innerHTML = html;
+            this.el.innerHTML = html;
             this.init = false;
             this.prevVdom = this.vdom;
         }
