@@ -650,7 +650,7 @@ class render {
                 init = true;
             }
             if (!init) {
-                html += '<' + node.tag + ((node.attr.length > 1) ? ' ' : '') + `${node.attr.reduce((acc, item, i) => acc + ((item.key !== 'tag') ? `${item.key}="${item.value.join(" ")}"${((node.attr.length - 1 != i + 1) ? ' ' : '')}` : ''), '')}` + ">"
+                html += '<' + node.tag + ((node.attr.length > 1) ? ' ' : '') + `${node.attr.filter((c) => !c.key.includes('r-')).reduce((acc, item, i) => acc + ((item.key !== 'tag') ? `${item.key}="${item.value.join(" ")}"${((node.attr.length - 1 != i + 1) ? ' ' : '')}` : ''), '')}` + ">"
                 html += node.innerTEXT;
             }
             node.childrens.forEach((node) => {
