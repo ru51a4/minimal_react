@@ -316,7 +316,7 @@ class render {
 
             }, () => {
 
-            }, () => {
+            }, (item) => {
                 //selfopentag
                 data = item
             })
