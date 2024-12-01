@@ -749,8 +749,16 @@ class render {
         parseTag(str) {
             let data = {};
             superxmlparser74.parse(str, (item) => {
+                //opentag
                 data = item;
-            }, () => { }, () => { })
+            }, () => {
+
+            }, () => {
+
+            }, () => {
+                //selfopentag
+                data = item
+            })
             return data;
         },
         setIndexes(arr) {

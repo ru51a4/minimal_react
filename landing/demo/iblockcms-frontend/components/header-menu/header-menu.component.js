@@ -7,7 +7,7 @@ class component_menu extends component {
     body() {
         return `
                 <div class="zhs-menu" style="position:absolute; z-index:999999;">
-                        <col r-for="res">
+                        <col r-for="res" />
                 </div>
                 `;
     }
