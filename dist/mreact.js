@@ -430,9 +430,7 @@ class _template {
                 //closedtag
                 parentStack.pop();
             }, (item) => {
-                //opentag
-
-                //
+                //selfclosedtag
                 let el = new dom_node();
                 el.attr = item.attr;
                 el.tag = item.tag;
@@ -441,9 +439,6 @@ class _template {
                     key: 'tag',
                     value: [item.tag]
                 })
-                if (parentStack[parentStack.length - 1] && el.tag !== 'script') {
-                    parentStack[parentStack.length - 1].childrens.push(el)
-                }
             });
 
         return res;
