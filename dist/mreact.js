@@ -429,6 +429,21 @@ class _template {
             (item) => {
                 //closedtag
                 parentStack.pop();
+            }, (item) => {
+                //opentag
+
+                //
+                let el = new dom_node();
+                el.attr = item.attr;
+                el.tag = item.tag;
+                res.push(el);
+                el.attr.push({
+                    key: 'tag',
+                    value: [item.tag]
+                })
+                if (parentStack[parentStack.length - 1] && el.tag !== 'script') {
+                    parentStack[parentStack.length - 1].childrens.push(el)
+                }
             });
 
         return res;
