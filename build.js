@@ -8,7 +8,7 @@ const jsBundle = () =>
         'src/template.js',
         'src/render.js'
     ])
-        .pipe(concat('mreact.js'))
+        .pipe(concat('rrender.js'))
         .pipe(dest('dist'));
 
 jsBundle();
