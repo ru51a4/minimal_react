@@ -127,7 +127,7 @@
                     <div class="d-flex jusitfy-content-center flex-column" r-if="!serf">
                         <div>список дел на сегодня:</div>
                         <ul>
-                            <my-li r-for="todos" />
+                            <my-li r-for="todos">
                         </ul>
                         <input class="form-control" type="text" onchange="model('${this.name}', {event: event, key: 'current'})">
                         </input>

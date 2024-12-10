@@ -219,6 +219,7 @@ class _template {
                 el.attr = item.attr;
                 el.tag = item.tag;
                 res.push(el);
+                parentStack[parentStack.length - 1].childrens.push(el)
                 el.attr.push({
                     key: 'tag',
                     value: [item.tag]
